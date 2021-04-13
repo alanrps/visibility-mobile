@@ -1,12 +1,10 @@
-import 'package:app_visibility/utils/app_routes.dart';
-import 'package:app_visibility/views/form_register_mark.dart';
-// import 'package:example/views/login_screen.dart';
 import 'package:flutter/material.dart';
-
-import 'views/form_register_mark.dart';
-// ignore: unused_import
-import 'views/login_screen.dart';
-// import 'package:example/views/maps.dart';
+//routes
+import 'package:app_visibility/routes/routes.dart';
+//views
+import 'views/form_create_marker.dart';
+import 'package:app_visibility/views/home.dart';
+import 'views/login.dart';
 
 void main() {
   runApp(MyApp());
@@ -23,10 +21,11 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.yellow,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: LoginScreen(),
+        initialRoute: AppRoutes.HOME,
         routes: {
-          AppRoutes.MAPS: (ctx) => FormRegisterMark(),
-          AppRoutes.LOGIN: (ctx) => LoginScreen(),
+          AppRoutes.CREATE_MARKER: (context) => FormCreateMark(),
+          AppRoutes.HOME: (context) => Home(),
+          AppRoutes.LOGIN: (context) => Login(),
         });
   }
 }

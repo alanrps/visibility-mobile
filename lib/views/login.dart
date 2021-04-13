@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+//routes
+import 'package:app_visibility/routes/routes.dart';
+// import 'package:app_visibility/views/form_register_mark.dart';
 
-class LoginScreen extends StatefulWidget {
+class Login extends StatefulWidget {
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _LoginState createState() => _LoginState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,15 +87,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     child: SizedBox.expand(
                       child: TextButton(
-                        child: Text(
-                          'Entrar',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                          child: Text(
+                            'Entrar',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                        onPressed: () => {},
-                      ),
+                          onPressed: () =>
+                              Navigator.of(context).pushNamed(AppRoutes.HOME)),
                     )),
                 SizedBox(
                   height: 10,

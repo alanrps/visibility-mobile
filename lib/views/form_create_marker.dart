@@ -1,13 +1,13 @@
-import 'package:app_visibility/widgets/location_input.dart';
+import 'package:app_visibility/views/home.dart';
 import 'package:flutter/material.dart';
 
-class FormRegisterMark extends StatefulWidget {
+class FormCreateMark extends StatefulWidget {
   @override
-  _FormRegisterMark createState() => _FormRegisterMark();
+  _FormCreateMark createState() => _FormCreateMark();
 }
 
-class _FormRegisterMark extends State<FormRegisterMark> {
-  final _titleController = TextEditingController();
+class _FormCreateMark extends State<FormCreateMark> {
+  // final _titleController = TextEditingController();
 
   void _submitForm() {}
 
@@ -16,6 +16,7 @@ class _FormRegisterMark extends State<FormRegisterMark> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Nova Marcação'),
+        backgroundColor: Colors.yellow[700],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -25,7 +26,7 @@ class _FormRegisterMark extends State<FormRegisterMark> {
               padding: const EdgeInsets.all(10),
               child: Column(
                 children: <Widget>[
-                  MyLocation(),
+                  Home(),
                 ],
               ),
             ),
