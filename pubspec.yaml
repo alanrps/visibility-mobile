@@ -36,6 +36,9 @@ dependencies:
   # geocoding: ^1.0.5
   # geolocator: ^6.1.1
 
+analyzer:
+  - enable-experiment:
+    - non-nullable
 
 dev_dependencies:
   flutter_test:

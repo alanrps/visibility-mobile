@@ -1,7 +1,11 @@
+import 'package:app_visibility/views/form_create_marker.dart';
+import 'package:app_visibility/widgets/Bars.dart';
 import 'package:flutter/material.dart';
+import 'package:app_visibility/widgets/map_main.dart';
+import 'package:app_visibility/widgets/ranking.dart';
+import 'package:app_visibility/widgets/users.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:app_visibility/routes/routes.dart';
-// import 'package:location/location.dart';
 import 'dart:async';
 
 class Home extends StatefulWidget {
@@ -10,96 +14,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Completer<GoogleMapController> _controller = Completer();
-
-  // Location location = new Location();
-
-  static const LatLng _center = const LatLng(45.521563, -122.677433);
-
-  void _onMapCreated(GoogleMapController controller) {
-    _controller.complete(controller);
-  }
-
-  // Future<LocationData> _getCurrentUserLocation() async {
-  //   return await Location().getLocation();
-  // }
-
-  // var _serviceEnabled = await location.serviceEnabled();
-  // if (!_serviceEnabled) {
-  //   _serviceEnabled = await location.requestService();
-  //   if (!_serviceEnabled) {
-  //     return;
-  //   }
-  // }
-
-  // var _permissionGranted = await location.hasPermission();
-  // if (_permissionGranted == PermissionStatus.denied) {
-  //   _permissionGranted = await location.requestPermission();
-  //   if (_permissionGranted != PermissionStatus.granted) {
-  //     return;
-  //   }
-  // }
-
-  // currentLocation = await location.getLocation();
-  // print(currentLocation);
-  // }
-
-  MapType _currentMapType = MapType.normal;
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Visibility'),
-          backgroundColor: Colors.yellow[700],
-          actions: <Widget>[
-            IconButton(icon: Icon(Icons.search), onPressed: () {})
-          ],
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: 0,
-          items: [
-            BottomNavigationBarItem(icon: Icon(Icons.star), label: "Ranking"),
-            BottomNavigationBarItem(icon: Icon(Icons.house), label: "Home"),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.account_circle), label: "Usuário"),
-          ],
-        ),
-        body: Stack(
-          children: <Widget>[
-            GoogleMap(
-              mapType: _currentMapType,
-              zoomControlsEnabled: false,
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(
-                target: _center,
-                zoom: 11.0,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    Navigator.of(context).pushNamed(AppRoutes.CREATE_MARKER);
-                  },
-                  materialTapTargetSize: MaterialTapTargetSize.padded,
-                  backgroundColor: Colors.white,
-                  child: const Icon(
-                    Icons.add,
-                    size: 45.0,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _homeScreen() {
   //   return Column(children: <Widget>[
   //     Container(
   //       height: 450,
@@ -110,10 +25,10 @@ class _HomeState extends State<Home> {
   //         width: 1,
   //         color: Colors.grey,
   //       )),
-  //       child: currentLocation == null
-  //           ? Text('Localização não informada!')
-  //           : Image.network(currentLocation,
-  //               fit: BoxFit.cover, width: double.infinity),
+  //       // child: currentLocation == null
+  //       //     ? Text('Localização não informada!')
+  //       //     : Image.network(currentLocation,
+  //       //         fit: BoxFit.cover, width: double.infinity),
   //     ),
   //     SizedBox(
   //       height: 5,
@@ -125,7 +40,7 @@ class _HomeState extends State<Home> {
   //           icon: Icon(Icons.location_on),
   //           label: Text('Localização Atual'),
   //           style: TextButton.styleFrom(primary: Colors.black),
-  //           onPressed: _getCurrentUserLocation,
+  //           // onPressed: _getCurrentUserLocation,
   //         ),
   //         TextButton.icon(
   //           icon: Icon(Icons.map),
@@ -137,4 +52,76 @@ class _HomeState extends State<Home> {
   //     )
   //   ]);
   // }
+  //
+  // Qualquer coisa setar como somente leitura futuramente
+  //
+
+  // Widget _map(context) {
+  //   return Stack(
+  //     children: <Widget>[
+  //       GoogleMap(
+  //         mapType: _currentMapType,
+  //         zoomControlsEnabled: false,
+  //         onMapCreated: _onMapCreated,
+  //         initialCameraPosition: CameraPosition(
+  //           target: _center,
+  //           zoom: 11.0,
+  //         ),
+  //         onTap: _selectPosition,
+  //         markers: _pickedPosition != null
+  //             ? {
+  //                 Marker(
+  //                     markerId: MarkerId("markedPosition"),
+  //                     position: _pickedPosition)
+  //               }
+  //             : _markersValues,
+  //       ),
+  //     ],
+  //   );
+  // }
+  //
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Visibility'),
+        backgroundColor: Colors.yellow[700],
+        actions: <Widget>[
+          IconButton(icon: Icon(Icons.search), onPressed: () {})
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.yellow[800],
+        onTap: _onItemTapped,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+              icon: Icon(Icons.star),
+              label: "Ranking",
+              backgroundColor: Colors.red),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.house),
+              label: "Home",
+              backgroundColor: Colors.green),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle),
+              label: "Usuário",
+              backgroundColor: Colors.blue),
+        ],
+      ),
+      body: <Widget>[
+        Ranking(),
+        MapMain(),
+        Users(),
+      ].elementAt(_selectedIndex),
+    );
+  }
 }

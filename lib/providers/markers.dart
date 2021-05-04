@@ -1,4 +1,4 @@
-import 'package:app_visibility/models/markers.dart';
+import 'package:app_visibility/models/marker.dart';
 import 'package:flutter/cupertino.dart';
 
 class Markers with ChangeNotifier {
