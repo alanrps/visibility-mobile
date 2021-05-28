@@ -13,7 +13,6 @@ class FormCreateMark extends StatefulWidget {
 
 class _FormCreateMark extends State<FormCreateMark> {
   Marker marker = new Marker();
-  // Place _place = new Place();
 
   @override
   void initState() {

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-//routes
 import 'package:app_visibility/routes/routes.dart';
-// import 'package:app_visibility/views/form_register_mark.dart';
 
 class Login extends StatefulWidget {
   @override
