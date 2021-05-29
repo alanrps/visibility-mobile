@@ -15,7 +15,7 @@ class _MapMainState extends State<MapMain> {
 
   Completer<GoogleMapController> _controller = Completer();
 
-  static const LatLng _center = const LatLng(45.521563, -122.677433);
+  static const LatLng _center = const LatLng(-24.043870, -52.376412);
 
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
@@ -28,8 +28,12 @@ class _MapMainState extends State<MapMain> {
   }
 
   static Set<Marker> _markersValues = <Marker>{
-    Marker(markerId: MarkerId("123456"), position: const LatLng(1.21, 1.22)),
-    Marker(markerId: MarkerId("1234567"), position: const LatLng(1.22, 1.23)),
+    Marker(
+        markerId: MarkerId("123456634"),
+        position: const LatLng(-24.041654, -52.375419)),
+    Marker(
+        markerId: MarkerId("123453467"),
+        position: const LatLng(-24.043006, -52.376041)),
   };
 
   MapType _currentMapType = MapType.normal;
@@ -47,13 +51,6 @@ class _MapMainState extends State<MapMain> {
             zoom: 11.0,
           ),
           onTap: _selectPosition,
-          markers: _pickedPosition != null
-              ? {
-                  Marker(
-                      markerId: MarkerId("markedPosition"),
-                      position: _pickedPosition)
-                }
-              : _markersValues,
         ),
         Padding(
           padding: const EdgeInsets.all(20.0),

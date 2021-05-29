@@ -25,10 +25,10 @@ class _HomeState extends State<Home> {
   //         width: 1,
   //         color: Colors.grey,
   //       )),
-  //       // child: currentLocation == null
-  //       //     ? Text('Localização não informada!')
-  //       //     : Image.network(currentLocation,
-  //       //         fit: BoxFit.cover, width: double.infinity),
+  // child: currentLocation == null
+  //     ? Text('Localização não informada!')
+  //     : Image.network(currentLocation,
+  //         fit: BoxFit.cover, width: double.infinity),
   //     ),
   //     SizedBox(
   //       height: 5,

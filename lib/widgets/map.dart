@@ -64,6 +64,30 @@ class _MapState extends State<Map> {
                     }
                   : {},
             ),
+            if (_pickedPosition != null)
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: FloatingActionButton(
+                    onPressed: () => Navigator.pushNamed(
+                        context, AppRoutes.CREATE_MARKER,
+                        arguments: {
+                          'position': {
+                            'latitude': _pickedPosition.latitude,
+                            'longitude': _pickedPosition.longitude,
+                          },
+                        }),
+                    materialTapTargetSize: MaterialTapTargetSize.padded,
+                    backgroundColor: Colors.white,
+                    child: const Icon(
+                      Icons.check,
+                      size: 45.0,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              )
           ],
         )),
       ),

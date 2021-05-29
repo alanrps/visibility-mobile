@@ -19,7 +19,14 @@ class _FormCreateMark extends State<FormCreateMark> {
     super.initState();
   }
 
-  List<String> markersTypes = ['Lugar', 'Vaga cadeirante'];
+  void _setPosition(double latitude, double longitude) {
+    setState(() {
+      marker.latitude = latitude;
+      marker.longitude = longitude;
+    });
+  }
+
+  List<String> markersTypes = ['Lugar', 'Vaga cadeirante', 'Ausência de rampa'];
   String markerTypeSelect;
 
   List<String> accessibleType = ['Acessível', 'Não acessível', 'Parcialmente'];
@@ -59,6 +66,15 @@ class _FormCreateMark extends State<FormCreateMark> {
 
   @override
   Widget build(BuildContext context) {
+    final arguments = ModalRoute.of(context).settings.arguments as Map;
+
+    // if (arguments != null) {
+    //   print(arguments['position']);
+    //   print(arguments['position']);
+    //   _setPosition(
+    //       arguments['position'].latitude, arguments['position'].longitude);
+    // }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Nova Marcação'),
@@ -81,13 +97,23 @@ class _FormCreateMark extends State<FormCreateMark> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         TextButton(
-                          style: TextButton.styleFrom(
-                            primary: Colors.black,
-                            backgroundColor: Colors.yellow[700],
-                            elevation: 0,
-                            padding: const EdgeInsets.all(12),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
+                          style: (arguments != null || marker.latitude != null)
+                              ? TextButton.styleFrom(
+                                  primary: Colors.black,
+                                  backgroundColor: Colors.grey,
+                                  elevation: 0,
+                                  padding: const EdgeInsets.all(12),
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                )
+                              : TextButton.styleFrom(
+                                  primary: Colors.black,
+                                  backgroundColor: Colors.yellow[700],
+                                  elevation: 0,
+                                  padding: const EdgeInsets.all(12),
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
                           child: Text(
                             "Selecionar Localização",
                             textAlign: TextAlign.right,
@@ -96,21 +122,35 @@ class _FormCreateMark extends State<FormCreateMark> {
                                 color: Colors.black,
                                 fontSize: 13),
                           ),
-                          onPressed: () {
-                            Navigator.of(context).pushNamed(AppRoutes.MAP);
-                          },
+                          onPressed:
+                              (arguments != null || marker.latitude != null)
+                                  ? null
+                                  : () {
+                                      Navigator.of(context)
+                                          .pushNamed(AppRoutes.MAP);
+                                    },
                         ),
                         SizedBox(
                           width: 5,
                         ),
                         TextButton(
-                          style: TextButton.styleFrom(
-                            primary: Colors.black,
-                            backgroundColor: Colors.yellow[700],
-                            elevation: 0,
-                            padding: const EdgeInsets.all(12),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
+                          style: (arguments != null || marker.latitude != null)
+                              ? TextButton.styleFrom(
+                                  primary: Colors.black,
+                                  backgroundColor: Colors.grey,
+                                  elevation: 0,
+                                  padding: const EdgeInsets.all(12),
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                )
+                              : TextButton.styleFrom(
+                                  primary: Colors.black,
+                                  backgroundColor: Colors.yellow[700],
+                                  elevation: 0,
+                                  padding: const EdgeInsets.all(12),
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
                           child: Text(
                             "Usar Localização atual",
                             textAlign: TextAlign.right,
@@ -119,116 +159,45 @@ class _FormCreateMark extends State<FormCreateMark> {
                                 color: Colors.black,
                                 fontSize: 13),
                           ),
-                          onPressed: () async {
-                            LocationData location =
-                                await this._getCurrentUserLocation();
+                          onPressed: (arguments != null ||
+                                  marker.latitude != null)
+                              ? null
+                              : () async {
+                                  LocationData location =
+                                      await this._getCurrentUserLocation();
+                                  // Verificar possível erro ao setar as variáveis
 
-                            // Verificar possível erro ao setar as variáveis
-                            marker.latitude = location.latitude;
-                            marker.longitude = location.longitude;
-                          },
+                                  // CircularProgressIndicator(
+                                  //     value: marker.latitude);
+
+                                  _setPosition(
+                                      location.latitude, location.longitude);
+                                },
                         ),
                       ],
                     ),
                     SizedBox(
                       height: 20,
                     ),
-                    TextFormField(
-                      autofocus: true,
-                      keyboardType: TextInputType.name,
-                      style: new TextStyle(color: Colors.black, fontSize: 20),
-                      onChanged: (String newDescription) {
-                        marker.description = newDescription;
-                      },
-                      decoration: InputDecoration(
-                        labelText: "Descrição da Marcação",
-                        labelStyle: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    DropdownButton<String>(
-                      isExpanded: true,
-                      value: markerTypeSelect,
-                      style: TextStyle(color: Colors.black),
-                      underline: Container(
-                        height: 2,
-                        color: Colors.yellow[700],
-                      ),
-                      onChanged: (String selectedMarker) {
-                        setState(() {
-                          markerTypeSelect = selectedMarker;
-                        });
-                      },
-                      hint: Text(
-                        "Selecione o tipo de marcação",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      items: markersTypes
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                    ),
-                    // SizedBox(
-                    //   height: 20,
-                    // ),
-                    if (markerTypeSelect == 'Lugar') ...[
-                      SizedBox(
-                        height: 20,
-                      ),
-                      TextFormField(
-                        autofocus: true,
-                        keyboardType: TextInputType.name,
-                        style: new TextStyle(color: Colors.black, fontSize: 20),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Campo Obrigatório';
-                          }
-                          return null;
-                        },
-                        onChanged: (String newName) {
-                          marker.name = newName;
-                        },
-                        decoration: InputDecoration(
-                          labelText: "Nome do Lugar",
-                          labelStyle: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
+                    if (arguments != null || marker.latitude != null) ...[
                       DropdownButton<String>(
                         isExpanded: true,
-                        value: accessibleTypeSelect,
+                        value: markerTypeSelect,
                         style: TextStyle(color: Colors.black),
                         underline: Container(
                           height: 2,
-                          color: Colors.yellow[700],
+                          color: Colors.yellow,
                         ),
-                        onChanged: (String selectedAcessible) {
-                          // * String? *
+                        onChanged: (String selectedMarker) {
                           setState(() {
-                            accessibleTypeSelect =
-                                selectedAcessible; // * newValue! *
+                            markerTypeSelect = selectedMarker;
                           });
                         },
                         hint: Text(
-                          "Nível de acessibilidade",
+                          "Selecione o tipo de marcação",
                           style: TextStyle(color: Colors.black),
                         ),
-                        items: accessibleType
+                        items: markersTypes
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -242,25 +211,106 @@ class _FormCreateMark extends State<FormCreateMark> {
                       TextFormField(
                         autofocus: true,
                         keyboardType: TextInputType.name,
-                        style: new TextStyle(color: Colors.black, fontSize: 20),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Campo Obrigatório';
-                          }
-                          return null;
-                        },
-                        onChanged: (String newDescriptionPlace) {
-                          marker.descriptionPlace = newDescriptionPlace;
+                        style: TextStyle(color: Colors.black, fontSize: 20),
+                        onChanged: (String newDescription) {
+                          marker.description = newDescription;
                         },
                         decoration: InputDecoration(
-                          labelText: "Descrição do lugar",
+                          labelText: "Descrição",
                           labelStyle: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.w400,
                             fontSize: 16,
                           ),
                         ),
-                      )
+                      ),
+                      // SizedBox(
+                      //   height: 20,
+                      // ),
+                      if (markerTypeSelect == 'Lugar') ...[
+                        SizedBox(
+                          height: 20,
+                        ),
+                        TextFormField(
+                          autofocus: true,
+                          keyboardType: TextInputType.name,
+                          style:
+                              new TextStyle(color: Colors.black, fontSize: 20),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Campo Obrigatório';
+                            }
+                            return null;
+                          },
+                          onChanged: (String newName) {
+                            marker.name = newName;
+                          },
+                          decoration: InputDecoration(
+                            labelText: "Nome do Lugar",
+                            labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        DropdownButton<String>(
+                          isExpanded: true,
+                          value: accessibleTypeSelect,
+                          style: TextStyle(color: Colors.black),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.yellow[700],
+                          ),
+                          onChanged: (String selectedAcessible) {
+                            // * String? *
+                            setState(() {
+                              accessibleTypeSelect =
+                                  selectedAcessible; // * newValue! *
+                            });
+                          },
+                          hint: Text(
+                            "Nível de acessibilidade",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          items: accessibleType
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        TextFormField(
+                          autofocus: true,
+                          keyboardType: TextInputType.name,
+                          style:
+                              new TextStyle(color: Colors.black, fontSize: 20),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Campo Obrigatório';
+                            }
+                            return null;
+                          },
+                          onChanged: (String newDescriptionPlace) {
+                            marker.descriptionPlace = newDescriptionPlace;
+                          },
+                          decoration: InputDecoration(
+                            labelText: "Descrição do lugar",
+                            labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                            ),
+                          ),
+                        )
+                      ]
                     ]
                   ],
                 ),
