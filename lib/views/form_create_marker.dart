@@ -13,6 +13,7 @@ class FormCreateMark extends StatefulWidget {
 
 class _FormCreateMark extends State<FormCreateMark> {
   Marker marker = new Marker();
+  bool _inProgress = false;
 
   @override
   void initState() {
@@ -163,19 +164,33 @@ class _FormCreateMark extends State<FormCreateMark> {
                                   marker.latitude != null)
                               ? null
                               : () async {
+                                  setState(() {
+                                    _inProgress = true;
+                                  });
+
                                   LocationData location =
                                       await this._getCurrentUserLocation();
                                   // Verificar possível erro ao setar as variáveis
 
-                                  // CircularProgressIndicator(
-                                  //     value: marker.latitude);
-
                                   _setPosition(
                                       location.latitude, location.longitude);
+
+                                  setState(() {
+                                    _inProgress = false;
+                                  });
                                 },
                         ),
                       ],
                     ),
+                    if (_inProgress != false) ...[
+                      SizedBox(
+                        height: 20,
+                      ),
+                      CircularProgressIndicator(
+                        color: Colors.black,
+                        value: null,
+                      )
+                    ],
                     SizedBox(
                       height: 20,
                     ),

@@ -12,19 +12,23 @@ class Map extends StatefulWidget {
 class _MapState extends State<Map> {
   MapType _currentMapType = MapType.normal;
   LatLng _pickedPosition;
+  // Map<String, double> _center;
+
+  Future<LatLng> _getCurrentUserLocation() async {
+    final LocationData location = await Location().getLocation();
+
+    return LatLng(location.latitude, location.longitude);
+    // print("Latitude ${location.latitude}/${location.longitude}");
+  }
+
+  // static const LatLng _center =
+  //     _getCurrentUserLocation().then((location) => location);
 
   static const LatLng _center = const LatLng(-24.034517, -52.372695);
   Completer<GoogleMapController> _controller = Completer();
 
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
-  }
-
-  Future<void> _getCurrentUserLocation() async {
-    final LocationData location = await Location().getLocation();
-
-    return location;
-    // print("Latitude ${location.latitude}/${location.longitude}");
   }
 
   void _selectPosition(LatLng position) {
