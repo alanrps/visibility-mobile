@@ -9,10 +9,20 @@ import 'package:provider/provider.dart';
 import 'views/form_create_marker.dart';
 import 'package:app_visibility/views/home.dart';
 import 'views/login.dart';
+import 'views/sign_up.dart';
 import 'widgets/map.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp( MaterialApp(
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: [const Locale('pt', 'BR')],
+      home: MyApp(),
+      ),
+    );
 }
 
 class MyApp extends StatelessWidget {
@@ -30,6 +40,7 @@ class MyApp extends StatelessWidget {
         routes: {
           AppRoutes.CREATE_MARKER: (context) => FormCreateMark(),
           AppRoutes.HOME: (context) => Home(),
+          AppRoutes.SIGNUP: (context) => Register(),
           AppRoutes.LOGIN: (context) => Login(),
           AppRoutes.MAP: (context) => Map(),
           AppRoutes.RANKING: (context) => Ranking(),

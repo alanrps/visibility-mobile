@@ -93,7 +93,7 @@ class _LoginState extends State<Login> {
                             ),
                           ),
                           onPressed: () =>
-                              Navigator.of(context).pushNamed(AppRoutes.HOME)),
+                            Navigator.of(context).pushNamed(AppRoutes.HOME)),
                     )),
                 SizedBox(
                   height: 10,
@@ -109,8 +109,8 @@ class _LoginState extends State<Login> {
                         color: Colors.black,
                       ),
                     ),
-                    onPressed: () => {},
-                  ),
+                    onPressed: () =>
+                      Navigator.of(context).pushNamed(AppRoutes.SIGNUP)),
                 ),
                 SizedBox(
                   height: 10,
