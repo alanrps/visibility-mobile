@@ -19,36 +19,30 @@ class _RegisterState extends State<Register> {
     padding: EdgeInsets.all(24),
     primary: Colors.lightGreen[700],
     onPrimary: Colors.white,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+    ),
     textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
   );
 
   void _submitForm() {
-    if (!_form.currentState.validate()) {
+    if (_form.currentState.validate()) {
       _form.currentState.save();
+      
+      String tempPhone = _formData['phone'].toString().trim();
+      print(tempPhone);
+
       final user = new User(
         name: _formData['name'],
-        gender: _formData['gender'],
-        birthDate: _formData['birthDate'],
+        gender: _userGender,
+        birthDate: null,
         phone: _formData['phone'],
         email: _formData['email'],
         password: _formData['password'],
       );
+
       print(user);
     }
-  }
-
-  Future<DateTime> _selectDate(BuildContext context) async {
-    DateTime currentDate = DateTime.now();
-    final DateTime pickedDate = await showDatePicker(
-        context: context,
-        initialDate: currentDate,
-        firstDate: DateTime(1900),
-        lastDate: currentDate);
-    if (pickedDate != null && pickedDate != currentDate)
-      setState(() {
-        currentDate = pickedDate;
-      });
-    return pickedDate;
   }
 
   @override
@@ -83,14 +77,15 @@ class _RegisterState extends State<Register> {
                 Column(
                   children: [
                     SizedBox(height: 24),
-                    Row(
-                      children: <Widget>[
-                        Text(
-                          'Gênero',
-                          style: const TextStyle(fontSize: 16, color: Colors.grey)   
+                    Row(children: <Widget>[
+                      Text(
+                        'Gênero',
+                        style: TextStyle(
+                          fontSize: 16,
+                          foreground: Paint()..color = Colors.grey[600],
                         ),
-                      ]
-                    ),
+                      )
+                    ]),
                     ListTile(
                       title: const Text('Homem'),
                       leading: Radio<Gender>(
@@ -131,26 +126,14 @@ class _RegisterState extends State<Register> {
                 ),
                 TextFormField(
                   textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.datetime,
-                  onTap: () => _selectDate(context),
-                  decoration: InputDecoration(
-                      icon: const Icon(
-                        Icons.calendar_today,
-                        color: Colors.black,
-                      ),
-                      labelText: 'Data de nascimento'),
-                  onSaved: (value) => _formData['birthDate'] = value,
-                ),
-                TextFormField(
-                  textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.phone,
                   validator: (value) {
                     String patttern = r'(^[0-9]*$)';
                     RegExp regExp = new RegExp(patttern);
                     if (value.length == 0)
                       return "Informe o celular";
-                    else if (value.length != 10)
-                      return "O celular deve ter 10 dígitos";
+                    else if (value.length != 10 && value.length != 11)
+                      return "O telefone deve ter 10 ou 11 dígitos";
                     else if (!regExp.hasMatch(value))
                       return "O número do celular so deve conter dígitos";
                     return null;
@@ -161,6 +144,7 @@ class _RegisterState extends State<Register> {
                       color: Colors.black,
                     ),
                     labelText: 'Telefone',
+                    hintText: '(DDD)999999999',
                   ),
                   onSaved: (value) => _formData['phone'] = value,
                 ),
@@ -194,14 +178,14 @@ class _RegisterState extends State<Register> {
                   validator: (value) {
                     if (value == null || value.isEmpty)
                       return 'campo obrigatório';
-                    else if (value.length < 6) return 'menor que 6 dígitos';
+                    else if (value.length < 6)
+                      return 'menor que 6 dígitos';
+                    else if (value != _formData['confirmPassword'])
+                      return 'senhas não coincidem';
                     return null;
                   },
                   decoration: InputDecoration(
-                      icon: Icon(
-                        Icons.lock,
-                        color: Colors.black
-                      ),
+                      icon: Icon(Icons.lock, color: Colors.black),
                       labelText: 'Senha',
                       suffixIcon: GestureDetector(
                         child: Icon(
@@ -217,15 +201,13 @@ class _RegisterState extends State<Register> {
                       )),
                   obscureText: _showPassword == false ? true : false,
                   onSaved: (value) => _formData['password'] = value,
+                  onChanged: (value) => _formData['password'] = value,
                 ),
                 TextFormField(
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.visiblePassword,
                   decoration: InputDecoration(
-                      icon: Icon(
-                        Icons.lock,
-                        color: Colors.black
-                      ),
+                      icon: Icon(Icons.lock, color: Colors.black),
                       labelText: 'Confirmar senha',
                       suffixIcon: GestureDetector(
                         child: Icon(
@@ -242,6 +224,17 @@ class _RegisterState extends State<Register> {
                       )),
                   obscureText:
                       _showPasswordConfirmation == false ? true : false,
+                  validator: (value) {
+                    if (value == null || value.isEmpty)
+                      return 'campo obrigatório';
+                    else if (value.length < 6)
+                      return 'menor que 6 dígitos';
+                    else if (_formData['password'] != value)
+                      return 'senhas não coincidem';
+                    return null;
+                  },
+                  onSaved: (value) => _formData['confirmPassword'] = value,
+                  onChanged: (value) => _formData['confirmPassword'] = value,
                 ),
                 new Container(
                     margin: const EdgeInsets.only(top: 16.0),
