@@ -12,19 +12,20 @@ class Map extends StatefulWidget {
 class _MapState extends State<Map> {
   MapType _currentMapType = MapType.normal;
   LatLng _pickedPosition;
+  // LatLng _center;
+
   // Map<String, double> _center;
 
-  Future<LatLng> _getCurrentUserLocation() async {
-    final LocationData location = await Location().getLocation();
+  // Future<void> _getCurrentUserLocation() async {
+  //   final LocationData location = await Location().getLocation();
 
-    return LatLng(location.latitude, location.longitude);
-    // print("Latitude ${location.latitude}/${location.longitude}");
-  }
-
-  // static const LatLng _center =
-  //     _getCurrentUserLocation().then((location) => location);
+  //   setState(() {
+  //     _center = LatLng(location.latitude, location.longitude);
+  //   });
+  // }
 
   static const LatLng _center = const LatLng(-24.034517, -52.372695);
+
   Completer<GoogleMapController> _controller = Completer();
 
   void _onMapCreated(GoogleMapController controller) {
@@ -32,6 +33,8 @@ class _MapState extends State<Map> {
   }
 
   void _selectPosition(LatLng position) {
+    print(position);
+
     setState(() {
       _pickedPosition = position;
     });
@@ -42,11 +45,8 @@ class _MapState extends State<Map> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Visibility'),
+          title: Text('Selecione a Localização'),
           backgroundColor: Colors.yellow[700],
-          actions: <Widget>[
-            IconButton(icon: Icon(Icons.search), onPressed: () {})
-          ],
         ),
         body: Center(
             child: Stack(

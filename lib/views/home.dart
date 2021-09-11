@@ -25,10 +25,10 @@ class _HomeState extends State<Home> {
   //         width: 1,
   //         color: Colors.grey,
   //       )),
-  // child: currentLocation == null
-  //     ? Text('Localização não informada!')
-  //     : Image.network(currentLocation,
-  //         fit: BoxFit.cover, width: double.infinity),
+  //       child: currentLocation == null
+  //           ? Text('Localização não informada!')
+  //           : Image.network(currentLocation,
+  //               fit: BoxFit.cover, width: double.infinity),
   //     ),
   //     SizedBox(
   //       height: 5,
@@ -52,9 +52,6 @@ class _HomeState extends State<Home> {
   //     )
   //   ]);
   // }
-  //
-  // Qualquer coisa setar como somente leitura futuramente
-  //
 
   // Widget _map(context) {
   //   return Stack(
@@ -79,7 +76,7 @@ class _HomeState extends State<Home> {
   //     ],
   //   );
   // }
-  //
+
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
@@ -94,19 +91,19 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text('Visibility'),
         backgroundColor: Colors.yellow[700],
-        actions: <Widget>[
-          IconButton(icon: Icon(Icons.search), onPressed: () {})
-        ],
+        // actions: <Widget>[
+        // IconButton(icon: Icon(Icons.search), onPressed: () {})
+        // ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.yellow[800],
         onTap: _onItemTapped,
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-              icon: Icon(Icons.star),
-              label: "Ranking",
-              backgroundColor: Colors.red),
+          // BottomNavigationBarItem(
+          //     icon: Icon(Icons.star),
+          //     label: "Ranking",
+          //     backgroundColor: Colors.red),
           BottomNavigationBarItem(
               icon: Icon(Icons.house),
               label: "Home",
@@ -118,9 +115,9 @@ class _HomeState extends State<Home> {
         ],
       ),
       body: <Widget>[
-        Ranking(),
         MapMain(),
         Users(),
+        // Ranking(),
       ].elementAt(_selectedIndex),
     );
   }
