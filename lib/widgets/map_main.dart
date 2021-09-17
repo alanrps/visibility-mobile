@@ -1,4 +1,5 @@
 import 'dart:async';
+// import 'dart:html';
 import 'package:dio/dio.dart';
 import 'package:geocore/geo.dart';
 import 'package:geocore/parse_wkt.dart';
@@ -7,6 +8,8 @@ import 'package:app_visibility/routes/routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:app_visibility/models/place.dart';
 
 class MapMain extends StatefulWidget {
   @override
@@ -16,20 +19,20 @@ class MapMain extends StatefulWidget {
 class _MapMainState extends State<MapMain> {
   Map<String, String> icons = {
     'EDUCATION': 'assets/educacao.png',
+    'HOSPITALS': 'assets/hospital.png',
+    'FOODS': 'assets/alimentos.png',
+    'SUPERMARKET': 'assets/supermercado.png',
   };
+
   Set<Marker> _markers = {};
-  bool _openModal = false;
+  Place place = new Place();
+  bool _openDialog = false;
   bool _inProgress = false;
   Dio dio = new Dio();
-  LatLng _pickedPosition;
   LatLng _center;
-  BitmapDescriptor mapMarker1;
-  BitmapDescriptor mapMarker2;
-  BitmapDescriptor mapMarker3;
-  BitmapDescriptor mapMarker4;
-  Completer<GoogleMapController> _controller = Completer();
+  String baseUrl = "http://192.168.100.41:3000";
 
-  Future<LatLng> _getCurrentUserLocation() async {
+  _getCurrentUserLocation() async {
     final LocationData location = await Location().getLocation();
     LatLng center = LatLng(location.latitude, location.longitude);
 
@@ -39,6 +42,15 @@ class _MapMainState extends State<MapMain> {
       _center = center;
       _inProgress = true;
     });
+  }
+
+  _loadImage(String typeIcon) async {
+    String iconPath = icons[typeIcon];
+
+    BitmapDescriptor icon =
+        await BitmapDescriptor.fromAssetImage(ImageConfiguration(), iconPath);
+
+    return icon;
   }
 
   LatLng _convertWktInLatLong(String coordinates) {
@@ -59,10 +71,32 @@ class _MapMainState extends State<MapMain> {
   //   });
   // }
 
+  _getDialogData(int id) async {
+    print(id);
+
+    String url = baseUrl + "/markers/places/$id";
+
+    Response response = await dio.get(url);
+
+    print(response.data);
+
+    // if (response.data.length) {
+    place.markerId = response.data['marker_id'];
+    place.name = response.data['name'];
+    place.classify = response.data['classify'];
+    place.spaceType = response.data['spaceType'];
+    place.description = response.data['description'];
+    // }
+
+    setState(() {
+      _openDialog = true;
+    });
+  }
+
   _getMarkers(LatLng coordinates) async {
     String currentPosition =
         "POINT(${coordinates.longitude} ${coordinates.latitude})";
-    String url = "http://192.168.237.70:3000/markers/${currentPosition}";
+    String url = "$baseUrl/markers/$currentPosition";
 
     Response response = await dio.get(url);
 
@@ -76,26 +110,71 @@ class _MapMainState extends State<MapMain> {
       }
 
       _markers.add(Marker(
-          markerId: MarkerId(marker['id'].toString()), position: coordinates));
+        icon: await _loadImage(marker['category_id']),
+        markerId: MarkerId(marker['id'].toString()),
+        position: coordinates,
+        onTap: marker['markers_type_id'] == 'PLACE'
+            ? () {
+                return _getDialogData(marker['id']);
+              }
+            : () => {},
+      ));
     }
   }
 
+  _getMarkersCamera(LatLng coordinates) async {
+    String currentPosition =
+        "POINT(${coordinates.longitude} ${coordinates.latitude})";
+    String url = "$baseUrl/markers/$currentPosition";
+
+    Response response = await dio.get(url);
+
+    print(response.data);
+
+    Set<Marker> _temporaryMarker = {};
+
+    for (Map<String, dynamic> marker in response.data) {
+      LatLng coordinates = _convertWktInLatLong(marker['coordinates']);
+
+      _temporaryMarker.add(Marker(
+          icon: await _loadImage(marker['category_id']),
+          markerId: MarkerId(marker['id'].toString()),
+          position: coordinates,
+          onTap: marker['markers_type_id'] == 'PLACE'
+              ? () {
+                  return _getDialogData(marker['id']);
+                }
+              : () => {}));
+    }
+
+    setState(() {
+      _markers = _temporaryMarker;
+    });
+  }
+
   void _onMapCreated(GoogleMapController controller) {
+    Completer<GoogleMapController> _controller = Completer();
+
     _controller.complete(controller);
   }
 
   void _selectPosition(LatLng position) async {
-    print(position);
+    double distanceToCenter = Geolocator.distanceBetween(
+      position.latitude,
+      position.longitude,
+      _center.latitude,
+      _center.longitude,
+    );
 
-    // setState(() {
-    //   _inProgress = true;
-    // });
+    print(distanceToCenter);
 
-    await _getMarkers(position);
+    if (distanceToCenter < 500) {
+      return;
+    }
 
-    // setState(() {
-    //   _inProgress = false;
-    // });
+    _center = position;
+
+    await _getMarkersCamera(position);
   }
 
   @override
@@ -104,79 +183,6 @@ class _MapMainState extends State<MapMain> {
     _getCurrentUserLocation();
     // setCustomMarker();
   }
-
-  // void setCustomMarker() async {
-  // mapMarker1 = await BitmapDescriptor.fromAssetImage(
-  //     ImageConfiguration(), 'assets/educacao.png');
-  //   mapMarker2 = await BitmapDescriptor.fromAssetImage(
-  //       ImageConfiguration(), 'assets/hospital.png');
-  //   mapMarker3 = await BitmapDescriptor.fromAssetImage(
-  //       ImageConfiguration(), 'assets/restaurante.png');
-  //   mapMarker4 = await BitmapDescriptor.fromAssetImage(
-  //       ImageConfiguration(), 'assets/supermercado.png');
-  // }
-
-  // static Set<Marker> _markersValues = <Marker>{
-  //   Marker(
-  //       // onTap: ,
-  //       markerId: MarkerId("123456634"),
-  //       position: const LatLng(-24.041654, -52.375419)),
-  //   Marker(
-  //       markerId: MarkerId("123453467"),
-  //       position: const LatLng(-24.043006, -52.376041)),
-  // };
-
-  // Set<Marker> _createMarker() {
-  //   return {
-  //     Marker(
-  //         markerId: MarkerId("marker_1"),
-  //         position: LatLng(-24.043006, -52.376041),
-  //         // icon: mapMarker1,
-  //         infoWindow: InfoWindow(title: 'Marker 1')),
-  //     Marker(
-  //       markerId: MarkerId("marker_2"),
-  //       position: LatLng(-24.034282, -52.374618),
-  //       // icon: mapMarker2,
-  //     ),
-  //     Marker(
-  //       markerId: MarkerId("marker_3"),
-  //       position: LatLng(-24.034654, -52.43270),
-  //       // icon: mapMarker3,
-  //     ),
-  //     Marker(
-  //       markerId: MarkerId("marker_4"),
-  //       position: LatLng(-24.036070, -52.374071),
-  //       // icon: mapMarker4,
-  //     ),
-  //     Marker(
-  //       markerId: MarkerId("marker_5"),
-  //       position: LatLng(-24.236070, -52.374071),
-  //       // icon: mapMarker3,
-  //     ),
-  //     Marker(
-  //       markerId: MarkerId("marker_6"),
-  //       position: LatLng(-24.056070, -52.374071),
-  //       // icon: mapMarker1,
-  //     ),
-  //     Marker(
-  //       markerId: MarkerId("marker_7"),
-  //       position: LatLng(-24.0786070, -52.374071),
-  //       // icon: mapMarker2,
-  //     ),
-  //     Marker(
-  //       markerId: MarkerId("marker_8"),
-  //       position: LatLng(-24.0456070, -52.474071),
-  //       // icon: mapMarker3,
-  //     ),
-  //     Marker(
-  //       markerId: MarkerId("marker_8"),
-  //       position: LatLng(-24.024451, -52.382979),
-  //       // icon: mapMarker3,
-  //     ),
-  //   };
-  // }
-
-  MapType _currentMapType = MapType.normal;
 
   @override
   Widget build(BuildContext context) {
@@ -194,34 +200,74 @@ class _MapMainState extends State<MapMain> {
         ],
         if (_inProgress != false) ...[
           GoogleMap(
-            mapType: _currentMapType,
-            zoomControlsEnabled: true,
+            mapType: MapType.normal,
+            mapToolbarEnabled: false,
+            zoomControlsEnabled: false,
             onMapCreated: _onMapCreated,
             markers: _markers,
             initialCameraPosition: CameraPosition(
               target: _center,
               zoom: 17,
             ),
-            // onCameraMove: (data) => print(data.target.longitude),
-            onTap: _selectPosition,
+            onCameraMove: (data) => _selectPosition(data.target),
+            // onTap: _selectPosition,
           ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Align(
-              alignment: Alignment.bottomRight,
-              child: FloatingActionButton(
-                onPressed: () =>
-                    Navigator.pushNamed(context, AppRoutes.CREATE_MARKER),
-                materialTapTargetSize: MaterialTapTargetSize.padded,
-                backgroundColor: Colors.white,
-                child: const Icon(
-                  Icons.add,
-                  size: 45.0,
-                  color: Colors.black,
+          if (_openDialog != false) ...[
+            AlertDialog(
+              content: Column(
+                children: [
+                  if (place.name != '') ...[
+                    Text("Nome do lugar"),
+                    Text(place.name)
+                  ],
+                  if (place.classify != '') ...[
+                    Text("Classicação"),
+                    Text(place.classify)
+                  ],
+                  // if (place.spaceType != '') ...[
+                  //   Text("Tipo de Espaço"),
+                  //   Text(place.spaceType)
+                  // ],
+                  if (place.description != '') ...[
+                    Text("Descrição"),
+                    Text(place.description)
+                  ]
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => {
+                    setState(() {
+                      _openDialog = false;
+                    })
+                  },
+                  style: TextButton.styleFrom(
+                    primary: Colors.black,
+                  ),
+                  child: Text("OK"),
+                ),
+              ],
+            )
+          ],
+          if (_openDialog != true) ...[
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: FloatingActionButton(
+                  onPressed: () =>
+                      Navigator.pushNamed(context, AppRoutes.CREATE_MARKER),
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
+                  backgroundColor: Colors.white,
+                  child: const Icon(
+                    Icons.add,
+                    size: 45.0,
+                    color: Colors.black,
+                  ),
                 ),
               ),
             ),
-          ),
+          ]
         ],
       ],
     );

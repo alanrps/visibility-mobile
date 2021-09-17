@@ -3,16 +3,18 @@ import 'package:flutter/foundation.dart';
 
 class Marker {
   int userId;
-  String typeMarkerId;
+  String typeMarker;
   double latitude;
   double longitude;
   String description;
   String details;
   String deficiency;
+  String category;
   //Lugar
   String name = '';
   String classify;
   String detailsPlace;
+  String spaceType;
   String descriptionPlace;
 
   // set userId(int userId) {

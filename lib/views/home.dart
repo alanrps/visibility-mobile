@@ -1,12 +1,12 @@
-import 'package:app_visibility/views/form_create_marker.dart';
-import 'package:app_visibility/widgets/Bars.dart';
+// import 'package:app_visibility/views/form_create_marker.dart';
+// import 'package:app_visibility/widgets/Bars.dart';
 import 'package:flutter/material.dart';
 import 'package:app_visibility/widgets/map_main.dart';
-import 'package:app_visibility/widgets/ranking.dart';
+// import 'package:app_visibility/widgets/ranking.dart';
 import 'package:app_visibility/widgets/users.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:app_visibility/routes/routes.dart';
-import 'dart:async';
+// import 'package:google_maps_flutter/google_maps_flutter.dart';
+// import 'package:app_visibility/routes/routes.dart';
+// import 'dart:async';
 
 class Home extends StatefulWidget {
   @override

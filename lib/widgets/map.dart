@@ -12,19 +12,24 @@ class Map extends StatefulWidget {
 class _MapState extends State<Map> {
   MapType _currentMapType = MapType.normal;
   LatLng _pickedPosition;
-  // LatLng _center;
+  LatLng _center;
+  bool _inProgress = false;
 
-  // Map<String, double> _center;
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUserLocation();
+  }
 
-  // Future<void> _getCurrentUserLocation() async {
-  //   final LocationData location = await Location().getLocation();
+  getCurrentUserLocation() async {
+    final LocationData location = await Location().getLocation();
+    LatLng center = LatLng(location.latitude, location.longitude);
 
-  //   setState(() {
-  //     _center = LatLng(location.latitude, location.longitude);
-  //   });
-  // }
-
-  static const LatLng _center = const LatLng(-24.034517, -52.372695);
+    setState(() {
+      _center = center;
+      _inProgress = true;
+    });
+  }
 
   Completer<GoogleMapController> _controller = Completer();
 
@@ -51,23 +56,35 @@ class _MapState extends State<Map> {
         body: Center(
             child: Stack(
           children: <Widget>[
-            GoogleMap(
-              mapType: _currentMapType,
-              zoomControlsEnabled: false,
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(
-                target: _center,
-                zoom: 11.0,
+            if (_inProgress == false) ...[
+              Container(
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.black,
+                    value: null,
+                  ),
+                ),
+              )
+            ],
+            if (_inProgress != false) ...[
+              GoogleMap(
+                mapType: _currentMapType,
+                zoomControlsEnabled: false,
+                onMapCreated: _onMapCreated,
+                initialCameraPosition: CameraPosition(
+                  target: _center,
+                  zoom: 17,
+                ),
+                onTap: _selectPosition,
+                markers: _pickedPosition != null
+                    ? {
+                        Marker(
+                            markerId: MarkerId("markedPosition"),
+                            position: _pickedPosition)
+                      }
+                    : {},
               ),
-              onTap: _selectPosition,
-              markers: _pickedPosition != null
-                  ? {
-                      Marker(
-                          markerId: MarkerId("markedPosition"),
-                          position: _pickedPosition)
-                    }
-                  : {},
-            ),
+            ],
             if (_pickedPosition != null)
               Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -77,10 +94,8 @@ class _MapState extends State<Map> {
                     onPressed: () => Navigator.pushNamed(
                         context, AppRoutes.CREATE_MARKER,
                         arguments: {
-                          'position': {
-                            'latitude': _pickedPosition.latitude,
-                            'longitude': _pickedPosition.longitude,
-                          },
+                          'latitude': _pickedPosition.latitude,
+                          'longitude': _pickedPosition.longitude,
                         }),
                     materialTapTargetSize: MaterialTapTargetSize.padded,
                     backgroundColor: Colors.white,

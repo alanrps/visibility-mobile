@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:app_visibility/models/authenticate.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -126,7 +126,7 @@ class _LoginState extends State<Login> {
                                   //   _formKey.currentState.save();
 
                                   //   Response response = await dio.post(
-                                  //       'http://192.168.237.70:3000/authenticate',
+                                  //       'http://192.168.100.41:3000/authenticate',
                                   //       // 'http://192.168.100.41:3000/authenticate',
                                   //       data: {
                                   //         'email': _formData.email,

@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:dio/dio.dart';
 import 'package:location/location.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:app_visibility/models/marker.dart';
@@ -15,26 +15,49 @@ class _FormCreateMark extends State<FormCreateMark> {
   Dio dio = new Dio();
   Marker marker = new Marker();
   bool _inProgress = false;
+  String baseUrl = "http://192.168.100.41:3000";
 
   @override
   void initState() {
     super.initState();
   }
 
-  List<String> selectAcessibility = ['Acessível', 'ACCESSIBLE'];
+  Future<LocationData> _getCurrentUserLocation() async {
+    final LocationData location = await Location().getLocation();
+
+    return location;
+  }
+
+  String _selectedAcessibilityType;
   Map<String, String> accessibilityTypes = {
-    'Acessível': 'ACESSIBLE',
+    'Acessível': 'ACCESSIBLE',
     'Não acessível': 'NOT ACCESSIBLE',
     'Parcialmente': 'PARTIALLY'
   };
 
-  List<String> markerTypeSelect = ['Lugar', 'PLACE'];
+  String _selectedMarkerType;
   Map<String, String> markerTypes = {
     'Lugar': 'PLACE',
     'Vaga de cadeirante': 'WHEELCHAIR_PARKING'
   };
 
-  List<String> spaceTypes = ['Privado', 'Público'];
+  String _selectedScapeType;
+  Map<String, String> spaceTypes = {'Privado': 'PRIVATE', 'Público': 'PUBLIC'};
+
+  String _selectedCategory;
+  Map<String, String> categories = {
+    'Viagem': 'TRAVEL',
+    'Confecções': 'CLOTHING',
+    'Transporte': 'TRANSPORT',
+    'Supermercado': 'SUPERMARKET',
+    'Serviços': 'SERVICES',
+    'Lazer': 'LEISURE',
+    'Eletrônicos': 'ELETRONICS',
+    'Educação': 'EDUCATION',
+    'Outros': 'OTHERS',
+    'Alimentação': 'FOODS',
+    'Hospitais': 'HOSPITALS',
+  };
 
   void _setPosition(double latitude, double longitude) {
     setState(() {
@@ -46,29 +69,20 @@ class _FormCreateMark extends State<FormCreateMark> {
   final _formKey = GlobalKey<FormState>();
 
   void _submitForm() async {
-    marker.typeMarkerId = markerTypeSelect.last;
-    print(selectAcessibility);
-    print(marker.typeMarkerId);
-    print(marker.latitude);
-    print(marker.longitude);
-    print(marker.description);
-    print(marker.classify);
-
-    // print(marker.descriptionPlace);
-    // print(marker.name);
-    // Recebendo null
-    // print(marker.detailsPlace);
-    // print(marker.details);
+    marker.typeMarker = markerTypes[_selectedMarkerType];
+    marker.category = categories[_selectedCategory];
+    marker.spaceType = spaceTypes[_selectedScapeType];
 
     // Corrigir validate
     if (_formKey.currentState.validate()) {
-      if (marker.typeMarkerId != '') {
-        marker.classify = selectAcessibility.last;
+      if (marker.typeMarker != '') {
+        marker.classify = accessibilityTypes[_selectedAcessibilityType];
       }
 
       final markerData = {
         'marker': {
-          'markers_type_id': marker.typeMarkerId,
+          'markers_type_id': marker.typeMarker,
+          'category_id': marker.category,
         },
         'point_data': {
           'latitude': marker.latitude,
@@ -76,7 +90,7 @@ class _FormCreateMark extends State<FormCreateMark> {
         },
       };
 
-      if (marker.typeMarkerId == 'PLACE') {
+      if (marker.typeMarker == 'PLACE') {
         markerData.addAll({
           'place': {
             'name': marker.name,
@@ -86,9 +100,8 @@ class _FormCreateMark extends State<FormCreateMark> {
         });
       }
 
-      final String url = 'http://192.168.237.70:3000/markers';
-
       try {
+        final String url = '$baseUrl/markers';
         Response response = await dio.post(url, data: markerData);
       } catch (e) {
         print(e);
@@ -119,27 +132,20 @@ class _FormCreateMark extends State<FormCreateMark> {
     //     });
   }
 
-  Future<LocationData> _getCurrentUserLocation() async {
-    final LocationData location = await Location().getLocation();
-
-    return location;
-  }
-
   @override
   Widget build(BuildContext context) {
     final arguments = ModalRoute.of(context).settings.arguments as Map;
-    print("asdsadsad ${arguments}");
 
-    // if (arguments != null) {
-    //   print(arguments['position']);
-    //   print(arguments['position']);
-    //   _setPosition(
-    //       arguments['position'].latitude, arguments['position'].longitude);
-    // }
+    if (arguments != null) {
+      print(arguments['latitude']);
+      print(arguments['longitude']);
+
+      _setPosition(arguments['latitude'], arguments['longitude']);
+    }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Novo Local'),
+        title: Text('Cadastro de Localização'),
         backgroundColor: Colors.yellow[700],
       ),
       body: Column(
@@ -257,20 +263,19 @@ class _FormCreateMark extends State<FormCreateMark> {
                     if (arguments != null || marker.latitude != null) ...[
                       DropdownButton<String>(
                           isExpanded: true,
-                          value: markerTypeSelect[0],
+                          value: _selectedMarkerType,
                           style: TextStyle(color: Colors.black),
                           underline: Container(
                             height: 2,
                             color: Colors.yellow,
                           ),
-                          onChanged: (String selectedMarker) {
+                          onChanged: (String selectedMarkerType) {
                             setState(() {
-                              markerTypeSelect[0] = selectedMarker;
-                              markerTypeSelect[1] = markerTypes[selectedMarker];
+                              _selectedMarkerType = selectedMarkerType;
                             });
                           },
                           hint: Text(
-                            "Selecione o tipo de local",
+                            "Tipo de local",
                             style: TextStyle(color: Colors.black),
                           ),
                           items:
@@ -280,7 +285,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                               child: Text(items),
                             );
                           }).toList()),
-                      if (markerTypeSelect.first == 'Lugar') ...[
+                      if (_selectedMarkerType == 'Lugar') ...[
                         SizedBox(
                           height: 20,
                         ),
@@ -340,17 +345,16 @@ class _FormCreateMark extends State<FormCreateMark> {
                         ),
                         DropdownButton<String>(
                             isExpanded: true,
-                            value: selectAcessibility.first,
+                            value: _selectedAcessibilityType,
                             style: TextStyle(color: Colors.black),
                             underline: Container(
                               height: 2,
                               color: Colors.yellow[700],
                             ),
-                            onChanged: (String selectedAcessible) {
+                            onChanged: (String selectedAcessibleType) {
                               setState(() {
-                                selectAcessibility[0] = selectedAcessible;
-                                selectAcessibility[1] =
-                                    accessibilityTypes[selectedAcessible];
+                                _selectedAcessibilityType =
+                                    selectedAcessibleType;
                               });
                             },
                             hint: Text(
@@ -360,6 +364,64 @@ class _FormCreateMark extends State<FormCreateMark> {
                             items: (accessibilityTypes.keys)
                                 .toList()
                                 .map((String items) {
+                              return DropdownMenuItem(
+                                value: items,
+                                child: Text(items),
+                              );
+                            }).toList()),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        DropdownButton<String>(
+                            isExpanded: true,
+                            value: _selectedCategory, //selectedCategory.first,
+                            style: TextStyle(color: Colors.black),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.yellow[700],
+                            ),
+                            onChanged: (String selectedCategory) {
+                              print(selectedCategory);
+
+                              setState(() {
+                                _selectedCategory = selectedCategory;
+                              });
+                            },
+                            hint: Text(
+                              "Categorias",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            items:
+                                (categories.keys).toList().map((String items) {
+                              return DropdownMenuItem(
+                                value: items,
+                                child: Text(items),
+                              );
+                            }).toList()),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        DropdownButton<String>(
+                            isExpanded: true,
+                            value: _selectedScapeType,
+                            style: TextStyle(color: Colors.black),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.yellow[700],
+                            ),
+                            onChanged: (String selectedSpaceType) {
+                              print(selectedSpaceType);
+
+                              setState(() {
+                                _selectedScapeType = selectedSpaceType;
+                              });
+                            },
+                            hint: Text(
+                              "Tipo de Espaço",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            items:
+                                (spaceTypes.keys).toList().map((String items) {
                               return DropdownMenuItem(
                                 value: items,
                                 child: Text(items),
