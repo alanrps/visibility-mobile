@@ -15,7 +15,7 @@ class _FormCreateMark extends State<FormCreateMark> {
   Dio dio = new Dio();
   Marker marker = new Marker();
   bool _inProgress = false;
-  String baseUrl = "http://192.168.100.41:3000";
+  String baseUrl = "http://192.168.237.70:3000";
 
   @override
   void initState() {
@@ -75,6 +75,8 @@ class _FormCreateMark extends State<FormCreateMark> {
 
     // Corrigir validate
     if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+
       if (marker.typeMarker != '') {
         marker.classify = accessibilityTypes[_selectedAcessibilityType];
       }
@@ -95,7 +97,8 @@ class _FormCreateMark extends State<FormCreateMark> {
           'place': {
             'name': marker.name,
             'classify': marker.classify,
-            'description': marker.description
+            'description': marker.description,
+            'space_type': marker.spaceType,
           }
         });
       }
@@ -106,12 +109,11 @@ class _FormCreateMark extends State<FormCreateMark> {
       } catch (e) {
         print(e);
       }
-
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Marcação Adicionada com sucesso!'),
+        duration: Duration(seconds: 2),
+      ));
       Navigator.pushNamed(context, '/home');
-
-      // ScaffoldMessenger.of(context)
-      //     .showSnackBar(SnackBar(content: Text('Processando dados')));
-
     }
 
     // showDialog(
@@ -300,11 +302,11 @@ class _FormCreateMark extends State<FormCreateMark> {
                             }
                             return null;
                           },
-                          // onSaved: (String newName) =>
-                          //     setState(() => marker.name = newName),
-                          onChanged: (String newName) {
-                            marker.name = newName;
-                          },
+                          onSaved: (String newName) =>
+                              setState(() => marker.name = newName),
+                          // onChanged: (String newName) {
+                          //   marker.name = newName;
+                          // },
                           decoration: InputDecoration(
                             labelText: "Nome do Lugar",
                             labelStyle: TextStyle(
@@ -320,8 +322,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                         TextFormField(
                           autofocus: true,
                           keyboardType: TextInputType.name,
-                          style:
-                              new TextStyle(color: Colors.black, fontSize: 20),
+                          style: new TextStyle(color: Colors.black),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Campo Obrigatório';

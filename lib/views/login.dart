@@ -12,6 +12,7 @@ class _LoginState extends State<Login> {
   Authenticate _formData = new Authenticate();
   final _formKey = GlobalKey<FormState>();
   Dio dio = new Dio();
+  String baseUrl = "http://192.168.237.70:3000";
 
   @override
   Widget build(BuildContext context) {
@@ -125,13 +126,11 @@ class _LoginState extends State<Login> {
                                   // if (_formKey.currentState.validate()) {
                                   //   _formKey.currentState.save();
 
-                                  //   Response response = await dio.post(
-                                  //       'http://192.168.100.41:3000/authenticate',
-                                  //       // 'http://192.168.100.41:3000/authenticate',
-                                  //       data: {
-                                  //         'email': _formData.email,
-                                  //         'password': _formData.password
-                                  //       }).catchError((err) {
+                                  //   Response response = await dio
+                                  //       .post('$baseUrl/authenticate', data: {
+                                  //     'email': _formData.email,
+                                  //     'password': _formData.password
+                                  //   }).catchError((err) {
                                   //     showDialog(
                                   //         context: context,
                                   //         builder: (BuildContext context) {
@@ -152,17 +151,16 @@ class _LoginState extends State<Login> {
                                   //         });
                                   //   });
 
+                                  //   print(response.data['token']);
+
                                   //   if (response.data['token'] != null) {
                                   //     final String token =
                                   //         response.data['token'];
 
                                   //     _formKey.currentState.reset();
-                                  //     Navigator.pushNamed(context, '/home');
-                                  //   }
-
-                                  Navigator.pushNamed(context, '/home');
-
-                                  // Passo para próxima página
+                                  Navigator.pushReplacementNamed(
+                                      context, '/home');
+                                  // }
 
                                   // final prefs =
                                   //     await SharedPreferences.getInstance();
@@ -174,9 +172,8 @@ class _LoginState extends State<Login> {
 
                                   // print(tokenString);
                                   // }
-                                }
-                                // Navigator.of(context).pushNamed(AppRoutes.HOME)),
-                                ))),
+                                  // }
+                                }))),
                     SizedBox(
                       height: 10,
                     ),

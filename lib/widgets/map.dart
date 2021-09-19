@@ -69,6 +69,7 @@ class _MapState extends State<Map> {
             if (_inProgress != false) ...[
               GoogleMap(
                 mapType: _currentMapType,
+                mapToolbarEnabled: false,
                 zoomControlsEnabled: false,
                 onMapCreated: _onMapCreated,
                 initialCameraPosition: CameraPosition(

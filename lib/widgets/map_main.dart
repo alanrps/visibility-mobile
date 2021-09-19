@@ -18,11 +18,32 @@ class MapMain extends StatefulWidget {
 
 class _MapMainState extends State<MapMain> {
   Map<String, String> icons = {
-    'EDUCATION': 'assets/educacao.png',
-    'HOSPITALS': 'assets/hospital.png',
-    'FOODS': 'assets/alimentos.png',
-    'SUPERMARKET': 'assets/supermercado.png',
+    'EDUCATION': 'assets/EDUCATION.png',
+    'HOSPITALS': 'assets/HOSPITALS.png',
+    'FOOD': 'assets/FOOD.png',
+    'SUPERMARKET': 'assets/SUPERMARKET.png',
+    'TRAVEL': 'assets/TRAVEL.png',
+    'TRANSPORT': 'assets/TRANSPORT.png',
+    'SERVICES': 'assets/SERVICES.png',
+    'LEISURE': 'assets/LEISURE.png',
+    'ACCOMMODATION': 'assets/ACCOMMODATION.png',
+    'FINANCE': 'assets/FINANCE.png',
+    'WHEELCHAIR_PARKING': 'assets/WHEELCHAIR_PARKING.png',
   };
+
+  Map<String, String> acessibilityTypes = {
+    'ACCESSIBLE': 'Acessível',
+    'NOT ACCESSIBLE': 'Não acessível',
+    'PARTIALLY': 'Parcialmente'
+  };
+
+  Map<String, Color> acessibilityTypesColors = {
+    'ACCESSIBLE': Colors.lightGreen,
+    'NOT ACCESSIBLE': Colors.redAccent,
+    'PARTIALLY': Colors.yellow
+  };
+
+  Map<String, String> spaceTypes = {'PRIVATE': 'Privado', 'PUBLIC': 'Público'};
 
   Set<Marker> _markers = {};
   Place place = new Place();
@@ -30,7 +51,7 @@ class _MapMainState extends State<MapMain> {
   bool _inProgress = false;
   Dio dio = new Dio();
   LatLng _center;
-  String baseUrl = "http://192.168.100.41:3000";
+  String baseUrl = "http://192.168.237.70:3000";
 
   _getCurrentUserLocation() async {
     final LocationData location = await Location().getLocation();
@@ -59,18 +80,6 @@ class _MapMainState extends State<MapMain> {
     return new LatLng(point.lat, point.lon);
   }
 
-  // List <Map>_formatMarkers(List<Map> markers){
-  //   List<Map> formatedMarkers = markers.map((marker){
-  //        LatLng coordinates = _convertWktInLatLong(marker.coordinates);
-
-  //       return Marker(
-  //         markerId: MarkerId(marker['id'].toString()),
-  //         position: coordinates,
-  //         icon: marker['category_id'],
-  //     )
-  //   });
-  // }
-
   _getDialogData(int id) async {
     print(id);
 
@@ -84,7 +93,7 @@ class _MapMainState extends State<MapMain> {
     place.markerId = response.data['marker_id'];
     place.name = response.data['name'];
     place.classify = response.data['classify'];
-    place.spaceType = response.data['spaceType'];
+    place.spaceType = response.data['space_type'];
     place.description = response.data['description'];
     // }
 
@@ -110,7 +119,9 @@ class _MapMainState extends State<MapMain> {
       }
 
       _markers.add(Marker(
-        icon: await _loadImage(marker['category_id']),
+        icon: await _loadImage(marker['markers_type_id'] == 'PLACE'
+            ? marker['category_id']
+            : marker['markers_type_id']),
         markerId: MarkerId(marker['id'].toString()),
         position: coordinates,
         onTap: marker['markers_type_id'] == 'PLACE'
@@ -137,7 +148,9 @@ class _MapMainState extends State<MapMain> {
       LatLng coordinates = _convertWktInLatLong(marker['coordinates']);
 
       _temporaryMarker.add(Marker(
-          icon: await _loadImage(marker['category_id']),
+          icon: await _loadImage(marker['markers_type_id'] == 'PLACE'
+              ? marker['category_id']
+              : marker['markers_type_id']),
           markerId: MarkerId(marker['id'].toString()),
           position: coordinates,
           onTap: marker['markers_type_id'] == 'PLACE'
@@ -181,7 +194,6 @@ class _MapMainState extends State<MapMain> {
   void initState() {
     super.initState();
     _getCurrentUserLocation();
-    // setCustomMarker();
   }
 
   @override
@@ -214,22 +226,52 @@ class _MapMainState extends State<MapMain> {
           ),
           if (_openDialog != false) ...[
             AlertDialog(
+              scrollable: true,
+              backgroundColor: place.classify != ''
+                  ? acessibilityTypesColors[place.classify]
+                  : Colors.white,
+              title: Text("Detalhes do local", textAlign: TextAlign.center),
               content: Column(
                 children: [
-                  if (place.name != '') ...[
-                    Text("Nome do lugar"),
-                    Text(place.name)
-                  ],
                   if (place.classify != '') ...[
-                    Text("Classicação"),
-                    Text(place.classify)
+                    Text(
+                      "Classicação",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(acessibilityTypes[place.classify]),
+                    SizedBox(
+                      height: 20,
+                    )
                   ],
-                  // if (place.spaceType != '') ...[
-                  //   Text("Tipo de Espaço"),
-                  //   Text(place.spaceType)
-                  // ],
+                  if (place.name != '') ...[
+                    Text(
+                      "Nome do lugar",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(place.name),
+                    SizedBox(
+                      height: 10,
+                    )
+                  ],
+                  if (place.spaceType != '') ...[
+                    Text(
+                      "Tipo de Espaço",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(spaceTypes[place.spaceType]),
+                    SizedBox(
+                      height: 20,
+                    )
+                  ],
                   if (place.description != '') ...[
-                    Text("Descrição"),
+                    Text(
+                      "Descrição",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     Text(place.description)
                   ]
                 ],
