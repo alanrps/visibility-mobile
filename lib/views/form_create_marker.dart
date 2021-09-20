@@ -16,6 +16,11 @@ class _FormCreateMark extends State<FormCreateMark> {
   Marker marker = new Marker();
   bool _inProgress = false;
   String baseUrl = "http://192.168.237.70:3000";
+  bool _isValid;
+  String _dropDownErrorMarkerType;
+  String _dropDownErrorAcessibilityType;
+  String _dropDownErrorCategory;
+  String _dropDownErrorSpaceType;
 
   @override
   void initState() {
@@ -47,16 +52,14 @@ class _FormCreateMark extends State<FormCreateMark> {
   String _selectedCategory;
   Map<String, String> categories = {
     'Viagem': 'TRAVEL',
-    'Confecções': 'CLOTHING',
     'Transporte': 'TRANSPORT',
     'Supermercado': 'SUPERMARKET',
     'Serviços': 'SERVICES',
     'Lazer': 'LEISURE',
-    'Eletrônicos': 'ELETRONICS',
     'Educação': 'EDUCATION',
-    'Outros': 'OTHERS',
-    'Alimentação': 'FOODS',
+    'Alimentação': 'FOOD',
     'Hospitais': 'HOSPITALS',
+    'Hospedagem': 'ACCOMMODATION',
   };
 
   void _setPosition(double latitude, double longitude) {
@@ -66,15 +69,84 @@ class _FormCreateMark extends State<FormCreateMark> {
     });
   }
 
+  _verifyDropDownMarkerType() {
+    if (_selectedMarkerType != null && _dropDownErrorMarkerType != null) {
+      setState(() {
+        _dropDownErrorMarkerType = '';
+        _isValid = true;
+      });
+    }
+    if (_selectedMarkerType == null) {
+      setState(() {
+        _dropDownErrorMarkerType = "Por Favor, Selecione um Local";
+        _isValid = false;
+      });
+    }
+  }
+
+  _verifyDropDownAcessibilityType() {
+    if (_selectedAcessibilityType != null &&
+        _dropDownErrorAcessibilityType != null) {
+      setState(() {
+        _dropDownErrorAcessibilityType = '';
+        _isValid = true;
+      });
+    }
+    if (_selectedAcessibilityType == null) {
+      setState(() {
+        _dropDownErrorAcessibilityType =
+            "Por Favor, Selecione o Nível de acessibilidade";
+        _isValid = false;
+      });
+    }
+  }
+
+  _verifyDropDownCategory() {
+    if (_selectedCategory != null && _dropDownErrorCategory != null) {
+      setState(() {
+        _dropDownErrorCategory = '';
+        _isValid = true;
+      });
+    }
+    if (_selectedCategory == null) {
+      setState(() {
+        _dropDownErrorCategory = "Por Favor, Selecione a Categoria";
+        _isValid = false;
+      });
+    }
+  }
+
+  _verifyDropDownSpaceType() {
+    if (_selectedScapeType != null && _dropDownErrorSpaceType != null) {
+      setState(() {
+        _dropDownErrorSpaceType = '';
+        _isValid = true;
+      });
+    }
+    if (_selectedScapeType == null) {
+      setState(() {
+        _dropDownErrorSpaceType = "Por Favor, Selecione o Tipo de Espaço";
+        _isValid = false;
+      });
+    }
+  }
+
   final _formKey = GlobalKey<FormState>();
 
   void _submitForm() async {
-    marker.typeMarker = markerTypes[_selectedMarkerType];
-    marker.category = categories[_selectedCategory];
-    marker.spaceType = spaceTypes[_selectedScapeType];
+    _verifyDropDownMarkerType();
+
+    if (_selectedMarkerType != null) {
+      _verifyDropDownAcessibilityType();
+      _verifyDropDownCategory();
+      _verifyDropDownSpaceType();
+    }
 
     // Corrigir validate
-    if (_formKey.currentState.validate()) {
+    if (_isValid && _formKey.currentState.validate()) {
+      marker.typeMarker = markerTypes[_selectedMarkerType];
+      marker.category = categories[_selectedCategory];
+      marker.spaceType = spaceTypes[_selectedScapeType];
       _formKey.currentState.save();
 
       if (marker.typeMarker != '') {
@@ -105,7 +177,7 @@ class _FormCreateMark extends State<FormCreateMark> {
 
       try {
         final String url = '$baseUrl/markers';
-        Response response = await dio.post(url, data: markerData);
+        await dio.post(url, data: markerData);
       } catch (e) {
         print(e);
       }
@@ -115,23 +187,6 @@ class _FormCreateMark extends State<FormCreateMark> {
       ));
       Navigator.pushNamed(context, '/home');
     }
-
-    // showDialog(
-    //     context: context,
-    //     builder: (BuildContext context) {
-    //       return AlertDialog(
-    //         title: Text("Verifique os dados inseridos"),
-    //         // content: Text("Verifique os dados inseridos."),
-    //         actions: [
-    //           FlatButton(
-    //             child: Text("Ok"),
-    //             onPressed: () {
-    //               Navigator.of(context).pop();
-    //             },
-    //           )
-    //         ],
-    //       );
-    //     });
   }
 
   @override
@@ -287,6 +342,12 @@ class _FormCreateMark extends State<FormCreateMark> {
                               child: Text(items),
                             );
                           }).toList()),
+                      _dropDownErrorMarkerType == null
+                          ? SizedBox.shrink()
+                          : Text(
+                              _dropDownErrorMarkerType ?? "",
+                              style: TextStyle(color: Colors.red),
+                            ),
                       if (_selectedMarkerType == 'Lugar') ...[
                         SizedBox(
                           height: 20,
@@ -370,6 +431,12 @@ class _FormCreateMark extends State<FormCreateMark> {
                                 child: Text(items),
                               );
                             }).toList()),
+                        _dropDownErrorAcessibilityType == null
+                            ? SizedBox.shrink()
+                            : Text(
+                                _dropDownErrorAcessibilityType ?? "",
+                                style: TextStyle(color: Colors.red),
+                              ),
                         SizedBox(
                           height: 20,
                         ),
@@ -399,6 +466,12 @@ class _FormCreateMark extends State<FormCreateMark> {
                                 child: Text(items),
                               );
                             }).toList()),
+                        _dropDownErrorCategory == null
+                            ? SizedBox.shrink()
+                            : Text(
+                                _dropDownErrorCategory ?? "",
+                                style: TextStyle(color: Colors.red),
+                              ),
                         SizedBox(
                           height: 20,
                         ),
@@ -428,6 +501,12 @@ class _FormCreateMark extends State<FormCreateMark> {
                                 child: Text(items),
                               );
                             }).toList()),
+                        _dropDownErrorSpaceType == null
+                            ? SizedBox.shrink()
+                            : Text(
+                                _dropDownErrorSpaceType ?? "",
+                                style: TextStyle(color: Colors.red),
+                              ),
                       ]
                     ]
                   ],
