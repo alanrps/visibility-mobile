@@ -1,16 +1,14 @@
-# app_visibility
+# Visibility Mobile
 
-A new Flutter project.
+## Objetivo
 
-## Getting Started
+Desenvolver uma aplicação que possibilite a troca de informações entre usuários por meio de um sistema de mapas, permitindo a classificações de locais de acordo com as suas características de acessibilidade e identificação de vagas para deficientes. O aplicativo ainda contará com um sistema de gamificação que será responsável por recompensar usuários, mediante a atribuição de pontos e a utilização de um ranking de contribuidores.
 
-This project is a starting point for a Flutter application.
+## Público Alvo
 
-A few resources to get you started if this is your first Flutter project:
+Aplicação destinada a pessoas com dificuldade de locomoção, em especial portadores de necessidades especiais.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## Tecnologias
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Dart / Flutter
+- Google Maps
