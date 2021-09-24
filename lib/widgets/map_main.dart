@@ -51,7 +51,7 @@ class _MapMainState extends State<MapMain> {
   bool _inProgress = false;
   Dio dio = new Dio();
   LatLng _center;
-  String baseUrl = "http://192.168.237.70:3000";
+  String baseUrl = "https://visibility-production-api.herokuapp.com";
 
   _getCurrentUserLocation() async {
     final LocationData location = await Location().getLocation();
@@ -113,10 +113,6 @@ class _MapMainState extends State<MapMain> {
 
     for (Map<String, dynamic> marker in response.data) {
       LatLng coordinates = _convertWktInLatLong(marker['coordinates']);
-
-      if (_markers.isNotEmpty) {
-        _markers = {};
-      }
 
       _markers.add(Marker(
         icon: await _loadImage(marker['markers_type_id'] == 'PLACE'

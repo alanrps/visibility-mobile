@@ -12,7 +12,7 @@ class _LoginState extends State<Login> {
   Authenticate _formData = new Authenticate();
   final _formKey = GlobalKey<FormState>();
   Dio dio = new Dio();
-  String baseUrl = "http://192.168.237.70:3000";
+  String baseUrl = "https://visibility-production-api.herokuapp.com";
 
   @override
   Widget build(BuildContext context) {

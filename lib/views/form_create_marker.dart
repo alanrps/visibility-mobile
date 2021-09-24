@@ -15,8 +15,8 @@ class _FormCreateMark extends State<FormCreateMark> {
   Dio dio = new Dio();
   Marker marker = new Marker();
   bool _inProgress = false;
-  String baseUrl = "http://192.168.237.70:3000";
-  bool _isValid;
+  String baseUrl = "https://visibility-production-api.herokuapp.com";
+  bool _isValid = true;
   String _dropDownErrorMarkerType;
   String _dropDownErrorAcessibilityType;
   String _dropDownErrorCategory;
@@ -69,6 +69,7 @@ class _FormCreateMark extends State<FormCreateMark> {
     });
   }
 
+  // talvez adicionar verificação para quando estiver falso e passar para true
   _verifyDropDownMarkerType() {
     if (_selectedMarkerType != null && _dropDownErrorMarkerType != null) {
       setState(() {
@@ -136,14 +137,17 @@ class _FormCreateMark extends State<FormCreateMark> {
   void _submitForm() async {
     _verifyDropDownMarkerType();
 
-    if (_selectedMarkerType != null) {
+    if (_selectedMarkerType != null && _selectedMarkerType == 'PLACE') {
       _verifyDropDownAcessibilityType();
       _verifyDropDownCategory();
       _verifyDropDownSpaceType();
     }
 
-    // Corrigir validate
+    print("deu não");
+    print(_isValid);
+
     if (_isValid && _formKey.currentState.validate()) {
+      print("pai ta aqui porra");
       marker.typeMarker = markerTypes[_selectedMarkerType];
       marker.category = categories[_selectedCategory];
       marker.spaceType = spaceTypes[_selectedScapeType];
