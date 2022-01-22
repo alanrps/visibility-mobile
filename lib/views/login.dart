@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:app_visibility/models/authenticate.dart';
+import 'package:app_visibility/routes/routes.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
@@ -188,7 +189,8 @@ class _LoginState extends State<Login> {
                             color: Colors.black,
                           ),
                         ),
-                        onPressed: () => {},
+                        onPressed: () => 
+                          Navigator.of(context).pushNamed(AppRoutes.SIGNUP),
                       ),
                     ),
                     SizedBox(

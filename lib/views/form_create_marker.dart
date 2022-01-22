@@ -147,7 +147,6 @@ class _FormCreateMark extends State<FormCreateMark> {
     print(_isValid);
 
     if (_isValid && _formKey.currentState.validate()) {
-      print("pai ta aqui porra");
       marker.typeMarker = markerTypes[_selectedMarkerType];
       marker.category = categories[_selectedCategory];
       marker.spaceType = spaceTypes[_selectedScapeType];
