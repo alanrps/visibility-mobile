@@ -1,10 +1,8 @@
+import '../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/services.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:date_time_picker/date_time_picker.dart';
-
-import '../models/user.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -14,49 +12,70 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   Dio dio = new Dio();
   final _form = GlobalKey<FormState>();
-  final _formData = Map<String, Object>();
+  final _formData = Map<String, Object?>();
   String baseUrl = "https://visibility-production-api.herokuapp.com";
 
-  Gender _userGender = Gender.MALE;
+  Gender? _userGender = Gender.MALE;
   bool _showPassword = false, _showPasswordConfirmation = false;
 
   final ButtonStyle style = ElevatedButton.styleFrom(
-    padding: EdgeInsets.all(24),
     primary: Colors.lightGreen[700],
     onPrimary: Colors.white,
+    padding: EdgeInsets.all(24),
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(18),
     ),
     textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
   );
 
   void _submitForm() async {
-    if (_form.currentState.validate()) {
-      _form.currentState.save();
-      
-      String tempPhone = _formData['phone'].toString().trim();
-      print(tempPhone);
+    if (_form.currentState!.validate()) {
+      _form.currentState!.save();
 
-      final user = new User(
-        name: _formData['name'],
+      User user = new User(
+        name: _formData['name'] as String?,
         gender: EnumToString.convertToString(_userGender),
-        birthDate: _formData['birthDate'],
-        phone: _formData['phone'],
-        email: _formData['email'],
-        password: _formData['password'],
+        birthDate: _formData['birthDate'] as String?,
+        phoneNumber: _formData['phoneNumber'] as String?,
+        email: _formData['email'] as String?,
+        password: _formData['password'] as String?,
       );
 
+      print(user.toJson());
+      
       try {
         String url = '$baseUrl/users';
-        await dio.post(url, data: user);
+        
+        await dio.post(url, data: user.toJson());
+        
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Usuário criado com sucesso!'),
         duration: Duration(seconds: 2),
       ));
-      } catch (error) {
-        print(error);
-      }
+
       Navigator.pushNamed(context, '/');
+
+      } on DioError catch (error) {
+        print(error);
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title:
+                  Text("Dados inválidos"),
+              content: Text(
+                  "Já existe uma conta vinculada a esse email."),
+              actions: [
+                TextButton(
+                  child: Text("Ok"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
+      }
     }
   }
 
@@ -74,7 +93,8 @@ class _RegisterState extends State<Register> {
           padding: EdgeInsets.all(24),
           child: Form(
               key: _form,
-              child: ListView(children: <Widget>[
+              child: ListView(scrollDirection: Axis.vertical,
+               children: [
                 TextFormField(
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.name,
@@ -100,7 +120,7 @@ class _RegisterState extends State<Register> {
                         'Gênero',
                         style: TextStyle(
                           fontSize: 16,
-                          foreground: Paint()..color = Colors.grey[600],
+                          foreground: Paint()..color = Colors.grey[600]!,
                         ),
                       )
                     ]),
@@ -109,7 +129,7 @@ class _RegisterState extends State<Register> {
                       leading: Radio<Gender>(
                         value: Gender.MALE,
                         groupValue: _userGender,
-                        onChanged: (Gender value) {
+                        onChanged: (Gender? value) {
                           setState(() {
                             _userGender = value;
                           });
@@ -121,7 +141,7 @@ class _RegisterState extends State<Register> {
                       leading: Radio<Gender>(
                         value: Gender.FEMALE,
                         groupValue: _userGender,
-                        onChanged: (Gender value) {
+                        onChanged: (Gender? value) {
                           setState(() {
                             _userGender = value;
                           });
@@ -133,7 +153,7 @@ class _RegisterState extends State<Register> {
                       leading: Radio<Gender>(
                         value: Gender.OTHER,
                         groupValue: _userGender,
-                        onChanged: (Gender value) {
+                        onChanged: (Gender? value) {
                           setState(() {
                             _userGender = value;
                           });
@@ -151,7 +171,7 @@ class _RegisterState extends State<Register> {
                   firstDate: DateTime(1900),
                   lastDate: DateTime(2100),
                   dateLabelText: 'Data Nascimento',
-                  onSaved: (val) => _formData['gender'] = val,
+                  onSaved: (val) => _formData['birthDate'] = val,
                 ),
                 TextFormField(
                   textInputAction: TextInputAction.next,
@@ -159,7 +179,7 @@ class _RegisterState extends State<Register> {
                   validator: (value) {
                     String patttern = r'(^[0-9]*$)';
                     RegExp regExp = new RegExp(patttern);
-                    if (value.length == 0)
+                    if (value!.length == 0)
                       return "Informe o celular";
                     else if (value.length != 10 && value.length != 11)
                       return "O telefone deve ter 10 ou 11 dígitos";
@@ -175,7 +195,7 @@ class _RegisterState extends State<Register> {
                     labelText: 'Telefone',
                     hintText: '(DDD)999999999',
                   ),
-                  onSaved: (value) => _formData['phone'] = value,
+                  onSaved: (value) => _formData['phoneNumber'] = value,
                 ),
                 TextFormField(
                   textInputAction: TextInputAction.next,
@@ -184,7 +204,7 @@ class _RegisterState extends State<Register> {
                     String pattern =
                         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
                     RegExp regExp = new RegExp(pattern);
-                    if (value.length == 0)
+                    if (value!.length == 0)
                       return "Informe o Email";
                     else if (!regExp.hasMatch(value))
                       return "Email inválido";
@@ -277,3 +297,4 @@ class _RegisterState extends State<Register> {
         ));
   }
 }
+

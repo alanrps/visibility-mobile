@@ -10,9 +10,10 @@ class Map extends StatefulWidget {
 }
 
 class _MapState extends State<Map> {
+  AppRoutes appRoutes = new AppRoutes();
   MapType _currentMapType = MapType.normal;
-  LatLng _pickedPosition;
-  LatLng _center;
+  LatLng? _pickedPosition;
+  late LatLng _center;
   bool _inProgress = false;
 
   @override
@@ -23,7 +24,7 @@ class _MapState extends State<Map> {
 
   getCurrentUserLocation() async {
     final LocationData location = await Location().getLocation();
-    LatLng center = LatLng(location.latitude, location.longitude);
+    LatLng center = LatLng(location.latitude!, location.longitude!);
 
     setState(() {
       _center = center;
@@ -81,7 +82,7 @@ class _MapState extends State<Map> {
                     ? {
                         Marker(
                             markerId: MarkerId("markedPosition"),
-                            position: _pickedPosition)
+                            position: _pickedPosition!)
                       }
                     : {},
               ),
@@ -93,10 +94,10 @@ class _MapState extends State<Map> {
                   alignment: Alignment.bottomRight,
                   child: FloatingActionButton(
                     onPressed: () => Navigator.pushNamed(
-                        context, AppRoutes.CREATE_MARKER,
+                        context, appRoutes.createMarker,
                         arguments: {
-                          'latitude': _pickedPosition.latitude,
-                          'longitude': _pickedPosition.longitude,
+                          'latitude': _pickedPosition!.latitude,
+                          'longitude': _pickedPosition!.longitude,
                         }),
                     materialTapTargetSize: MaterialTapTargetSize.padded,
                     backgroundColor: Colors.white,

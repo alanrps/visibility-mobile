@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   flutter:
@@ -38,10 +38,11 @@ dependencies:
   geocore: ^0.7.0
   # geocoding: ^1.0.5
   geolocator: ^7.6.0
-  dotenv: ^3.0.0
+  flutter_dotenv: ^5.0.2
   date_time_picker: ^2.1.0
   enum_to_string: ^2.0.1
   json_annotation: ^4.0.0
+  jwt_decoder: ^2.0.1
 
 analyzer:
   - enable-experiment:
@@ -77,6 +78,7 @@ flutter:
 
   assets:
     - assets/
+    - .env
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

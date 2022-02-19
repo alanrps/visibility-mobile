@@ -1,29 +1,27 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:flutter/material.dart';
-
-// part 'user.g.dart';
+part 'user.g.dart';
 
 enum Gender { MALE, FEMALE, OTHER }
 
 @JsonSerializable()
 class User {
-  final String name;
+  final String? name;
   final String gender;
-  final String birthDate;
-  final String phone;
-  final String email;
-  final String password;
+  final String? birthDate;
+  final String? phoneNumber;
+  final String? email;
+  final String? password;
 
   const User({
-    @required this.name,
-    @required this.gender,
-    @required this.birthDate,
-    @required this.phone,
-    @required this.email,
-    @required this.password,
+    required this.name,
+    required this.gender,
+    required this.birthDate,
+    required this.phoneNumber,
+    required this.email,
+    required this.password,
   });
 
-  // factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
-  //  Map<String, dynamic> toJson() => _$UserToJson(this);
+   Map<String, dynamic> toJson() => _$UserToJson(this);
 }

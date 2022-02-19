@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:location/location.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:app_visibility/models/marker.dart';
 import 'package:app_visibility/routes/routes.dart';
@@ -12,15 +11,16 @@ class FormCreateMark extends StatefulWidget {
 }
 
 class _FormCreateMark extends State<FormCreateMark> {
+  AppRoutes appRoutes = new AppRoutes();
   Dio dio = new Dio();
   Marker marker = new Marker();
   bool _inProgress = false;
   String baseUrl = "https://visibility-production-api.herokuapp.com";
   bool _isValid = true;
-  String _dropDownErrorMarkerType;
-  String _dropDownErrorAcessibilityType;
-  String _dropDownErrorCategory;
-  String _dropDownErrorSpaceType;
+  String? _dropDownErrorMarkerType;
+  String? _dropDownErrorAcessibilityType;
+  String? _dropDownErrorCategory;
+  String? _dropDownErrorSpaceType;
 
   @override
   void initState() {
@@ -33,23 +33,23 @@ class _FormCreateMark extends State<FormCreateMark> {
     return location;
   }
 
-  String _selectedAcessibilityType;
+  String? _selectedAcessibilityType;
   Map<String, String> accessibilityTypes = {
     'Acessível': 'ACCESSIBLE',
     'Não acessível': 'NOT ACCESSIBLE',
     'Parcialmente': 'PARTIALLY'
   };
 
-  String _selectedMarkerType;
+  String? _selectedMarkerType;
   Map<String, String> markerTypes = {
     'Lugar': 'PLACE',
     'Vaga de cadeirante': 'WHEELCHAIR_PARKING'
   };
 
-  String _selectedScapeType;
+  String? _selectedScapeType;
   Map<String, String> spaceTypes = {'Privado': 'PRIVATE', 'Público': 'PUBLIC'};
 
-  String _selectedCategory;
+  String? _selectedCategory;
   Map<String, String> categories = {
     'Viagem': 'TRAVEL',
     'Transporte': 'TRANSPORT',
@@ -62,7 +62,7 @@ class _FormCreateMark extends State<FormCreateMark> {
     'Hospedagem': 'ACCOMMODATION',
   };
 
-  void _setPosition(double latitude, double longitude) {
+  void _setPosition(double? latitude, double? longitude) {
     setState(() {
       marker.latitude = latitude;
       marker.longitude = longitude;
@@ -146,14 +146,14 @@ class _FormCreateMark extends State<FormCreateMark> {
     print("deu não");
     print(_isValid);
 
-    if (_isValid && _formKey.currentState.validate()) {
-      marker.typeMarker = markerTypes[_selectedMarkerType];
-      marker.category = categories[_selectedCategory];
-      marker.spaceType = spaceTypes[_selectedScapeType];
-      _formKey.currentState.save();
+    if (_isValid && _formKey.currentState!.validate()) {
+      marker.typeMarker = markerTypes[_selectedMarkerType!];
+      marker.category = categories[_selectedCategory!];
+      marker.spaceType = spaceTypes[_selectedScapeType!];
+      _formKey.currentState!.save();
 
       if (marker.typeMarker != '') {
-        marker.classify = accessibilityTypes[_selectedAcessibilityType];
+        marker.classify = accessibilityTypes[_selectedAcessibilityType!];
       }
 
       final markerData = {
@@ -194,7 +194,7 @@ class _FormCreateMark extends State<FormCreateMark> {
 
   @override
   Widget build(BuildContext context) {
-    final arguments = ModalRoute.of(context).settings.arguments as Map;
+    final arguments = ModalRoute.of(context)!.settings.arguments as Map?;
 
     if (arguments != null) {
       print(arguments['latitude']);
@@ -255,7 +255,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                                   ? null
                                   : () {
                                       Navigator.of(context)
-                                          .pushNamed(AppRoutes.MAP);
+                                          .pushNamed(appRoutes.getMap);
                                     },
                         ),
                         SizedBox(
@@ -329,7 +329,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                             height: 2,
                             color: Colors.yellow,
                           ),
-                          onChanged: (String selectedMarkerType) {
+                          onChanged: (String? selectedMarkerType) {
                             setState(() {
                               _selectedMarkerType = selectedMarkerType;
                             });
@@ -366,7 +366,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                             }
                             return null;
                           },
-                          onSaved: (String newName) =>
+                          onSaved: (String? newName) =>
                               setState(() => marker.name = newName),
                           // onChanged: (String newName) {
                           //   marker.name = newName;
@@ -416,7 +416,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                               height: 2,
                               color: Colors.yellow[700],
                             ),
-                            onChanged: (String selectedAcessibleType) {
+                            onChanged: (String? selectedAcessibleType) {
                               setState(() {
                                 _selectedAcessibilityType =
                                     selectedAcessibleType;
@@ -451,7 +451,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                               height: 2,
                               color: Colors.yellow[700],
                             ),
-                            onChanged: (String selectedCategory) {
+                            onChanged: (String? selectedCategory) {
                               print(selectedCategory);
 
                               setState(() {
@@ -486,7 +486,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                               height: 2,
                               color: Colors.yellow[700],
                             ),
-                            onChanged: (String selectedSpaceType) {
+                            onChanged: (String? selectedSpaceType) {
                               print(selectedSpaceType);
 
                               setState(() {

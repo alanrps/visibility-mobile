@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:app_visibility/models/authenticate.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:app_visibility/routes/routes.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
+import 'package:app_visibility/models/authenticate.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -10,6 +11,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  AppRoutes appRoutes = new AppRoutes();
   Authenticate _formData = new Authenticate();
   final _formKey = GlobalKey<FormState>();
   Dio dio = new Dio();
@@ -38,6 +40,7 @@ class _LoginState extends State<Login> {
                       height: 20,
                     ),
                     TextFormField(
+                      textInputAction: TextInputAction.next,
                       autofocus: true,
                       keyboardType: TextInputType.emailAddress,
                       style: new TextStyle(color: Colors.black),
@@ -92,7 +95,7 @@ class _LoginState extends State<Login> {
                           style: TextStyle(color: Colors.black),
                         ),
                         onPressed: () {
-                          print('Recuperar senha');
+                          Navigator.of(context).pushNamed(appRoutes.recoveryPassword);
                         },
                       ),
                     ),
@@ -108,8 +111,8 @@ class _LoginState extends State<Login> {
                             end: Alignment.bottomRight,
                             stops: [0.3, 1],
                             colors: [
-                              Colors.yellow[500],
-                              Colors.yellow[900],
+                              Colors.yellow[500]!,
+                              Colors.yellow[900]!,
                             ],
                           ),
                           borderRadius: BorderRadius.all(Radius.circular(5)),
@@ -124,73 +127,73 @@ class _LoginState extends State<Login> {
                                   ),
                                 ),
                                 onPressed: () async {
-                                  // if (_formKey.currentState.validate()) {
-                                  //   _formKey.currentState.save();
+                                  if (_formKey.currentState!.validate()) {
+                                    _formKey.currentState!.save();
 
-                                  //   Response response = await dio
-                                  //       .post('$baseUrl/authenticate', data: {
-                                  //     'email': _formData.email,
-                                  //     'password': _formData.password
-                                  //   }).catchError((err) {
-                                  //     showDialog(
-                                  //         context: context,
-                                  //         builder: (BuildContext context) {
-                                  //           return AlertDialog(
-                                  //             title:
-                                  //                 Text("Credenciais inválidas"),
-                                  //             content: Text(
-                                  //                 "Usuário ou senha incorreto."),
-                                  //             actions: [
-                                  //               FlatButton(
-                                  //                 child: Text("Ok"),
-                                  //                 onPressed: () {
-                                  //                   Navigator.of(context).pop();
-                                  //                 },
-                                  //               )
-                                  //             ],
-                                  //           );
-                                  //         });
-                                  //   });
+                                    Response response = await dio
+                                        .post('$baseUrl/authenticate', data: {
+                                      'email': _formData.email,
+                                      'password': _formData.password
+                                    }).catchError((err) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title:
+                                                  Text("Credenciais inválidas"),
+                                              content: Text(
+                                                  "Usuário ou senha incorreto."),
+                                              actions: [
+                                                TextButton(
+                                                  child: Text("Ok"),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                )
+                                              ],
+                                            );
+                                          });
+                                    });
 
-                                  //   print(response.data['token']);
+                                    print(response.data['token']);
 
-                                  //   if (response.data['token'] != null) {
-                                  //     final String token =
-                                  //         response.data['token'];
+                                    if (response.data['token'] != null) {
+                                          final String token = response.data['token'];
 
-                                  //     _formKey.currentState.reset();
-                                  Navigator.pushReplacementNamed(
-                                      context, '/home');
-                                  // }
+                                          _formKey.currentState!.reset();
 
-                                  // final prefs =
-                                  //     await SharedPreferences.getInstance();
+                                          Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
 
-                                  // prefs.setString('token', token);
+                                          print(decodedToken);
 
-                                  // final tokenString =
-                                  //     prefs.getString('token');
+                                          final prefs = await SharedPreferences.getInstance();
 
-                                  // print(tokenString);
-                                  // }
-                                  // }
-                                }))),
+                                          prefs.setInt('token', decodedToken['id']);
+
+                                      Navigator.pushReplacementNamed(context, appRoutes.getHome);
+                                  }}
+                                }
+                                ))),
                     SizedBox(
                       height: 10,
                     ),
                     Container(
-                      height: 50,
-                      color: Colors.white,
+                      height: 30,
+                      // decoration: BoxDecoration(
+                      //   color: Colors.grey,
+                      //   borderRadius: BorderRadius.all(Radius.circular(5))
+                      // ),
                       child: TextButton(
                         child: Text(
                           'Cadastre-se',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
+                            
                           ),
                         ),
                         onPressed: () => 
-                          Navigator.of(context).pushNamed(AppRoutes.SIGNUP),
+                          Navigator.of(context).pushNamed(appRoutes.signup),
                       ),
                     ),
                     SizedBox(

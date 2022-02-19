@@ -5,7 +5,6 @@ import 'package:geocore/geo.dart';
 import 'package:geocore/parse_wkt.dart';
 import 'package:location/location.dart';
 import 'package:app_visibility/routes/routes.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -17,6 +16,8 @@ class MapMain extends StatefulWidget {
 }
 
 class _MapMainState extends State<MapMain> {
+  AppRoutes appRoutes = new AppRoutes();
+
   Map<String, String> icons = {
     'EDUCATION': 'assets/EDUCATION.png',
     'HOSPITALS': 'assets/HOSPITALS.png',
@@ -50,12 +51,12 @@ class _MapMainState extends State<MapMain> {
   bool _openDialog = false;
   bool _inProgress = false;
   Dio dio = new Dio();
-  LatLng _center;
+  late LatLng _center;
   String baseUrl = "https://visibility-production-api.herokuapp.com";
 
   _getCurrentUserLocation() async {
     final LocationData location = await Location().getLocation();
-    LatLng center = LatLng(location.latitude, location.longitude);
+    LatLng center = LatLng(location.latitude!, location.longitude!);
 
     await _getMarkers(center);
 
@@ -65,8 +66,8 @@ class _MapMainState extends State<MapMain> {
     });
   }
 
-  _loadImage(String typeIcon) async {
-    String iconPath = icons[typeIcon];
+  _loadImage(String? typeIcon) async {
+    String iconPath = icons[typeIcon!]!;
 
     BitmapDescriptor icon =
         await BitmapDescriptor.fromAssetImage(ImageConfiguration(), iconPath);
@@ -75,12 +76,12 @@ class _MapMainState extends State<MapMain> {
   }
 
   LatLng _convertWktInLatLong(String coordinates) {
-    GeoPoint point = wktGeographic.parse(coordinates);
+    GeoPoint point = wktGeographic.parse(coordinates) as GeoPoint;
 
     return new LatLng(point.lat, point.lon);
   }
 
-  _getDialogData(int id) async {
+  _getDialogData(int? id) async {
     print(id);
 
     String url = baseUrl + "/markers/places/$id";
@@ -224,7 +225,7 @@ class _MapMainState extends State<MapMain> {
             AlertDialog(
               scrollable: true,
               backgroundColor: place.classify != ''
-                  ? acessibilityTypesColors[place.classify]
+                  ? acessibilityTypesColors[place.classify!]
                   : Colors.white,
               title: Text("Detalhes do local", textAlign: TextAlign.center),
               content: Column(
@@ -235,7 +236,7 @@ class _MapMainState extends State<MapMain> {
                       textAlign: TextAlign.left,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    Text(acessibilityTypes[place.classify]),
+                    Text(acessibilityTypes[place.classify!]!),
                     SizedBox(
                       height: 20,
                     )
@@ -246,7 +247,7 @@ class _MapMainState extends State<MapMain> {
                       textAlign: TextAlign.left,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    Text(place.name),
+                    Text(place.name!),
                     SizedBox(
                       height: 10,
                     )
@@ -257,7 +258,7 @@ class _MapMainState extends State<MapMain> {
                       textAlign: TextAlign.left,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    Text(spaceTypes[place.spaceType]),
+                    Text(spaceTypes[place.spaceType!]!),
                     SizedBox(
                       height: 20,
                     )
@@ -268,7 +269,7 @@ class _MapMainState extends State<MapMain> {
                       textAlign: TextAlign.left,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    Text(place.description)
+                    Text(place.description!)
                   ]
                 ],
               ),
@@ -294,7 +295,7 @@ class _MapMainState extends State<MapMain> {
                 alignment: Alignment.bottomRight,
                 child: FloatingActionButton(
                   onPressed: () =>
-                      Navigator.pushNamed(context, AppRoutes.CREATE_MARKER),
+                      Navigator.pushNamed(context, appRoutes.getCreateMarker),
                   materialTapTargetSize: MaterialTapTargetSize.padded,
                   backgroundColor: Colors.white,
                   child: const Icon(

@@ -1,49 +1,35 @@
 import 'package:flutter/material.dart';
-//routes
+import 'package:app_visibility/theme/style.dart';
 import 'package:app_visibility/routes/routes.dart';
-//views
-import 'package:app_visibility/views/home.dart';
-import 'package:app_visibility/widgets/ranking.dart';
-import 'package:app_visibility/widgets/map_main.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:app_visibility/widgets/users.dart';
-import 'views/form_create_marker.dart';
-import 'views/sign_up.dart';
-import 'views/login.dart';
-import 'widgets/map.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
-   runApp( MaterialApp(
+Future main() async {
+  // Carrega as váriaveis de ambiente do aquivo .env
+  await dotenv.load(fileName: ".env");
+
+  return runApp(
+    MaterialApp(
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate
       ],
       supportedLocales: [const Locale('pt', 'BR')],
       home: MyApp(),
-      ),
-    );
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
+  AppRoutes appRoutes = new AppRoutes();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Visibility',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.yellow,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-        initialRoute: AppRoutes.LOGIN,
-        routes: {
-          AppRoutes.SIGNUP: (context) => Register(),
-          AppRoutes.CREATE_MARKER: (context) => FormCreateMark(),
-          AppRoutes.HOME: (context) => Home(),
-          AppRoutes.LOGIN: (context) => Login(),
-          AppRoutes.MAP: (context) => Map(),
-          AppRoutes.RANKING: (context) => Ranking(),
-          AppRoutes.MAPMAIN: (context) => MapMain(),
-          AppRoutes.USERS: (context) => Users(),
-        });
+        theme: appTheme(),
+        initialRoute: appRoutes.getLogin,
+        routes: appRoutes.routes());
   }
 }
