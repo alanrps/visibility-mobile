@@ -55,15 +55,37 @@ class _MapMainState extends State<MapMain> {
   String baseUrl = "https://visibility-production-api.herokuapp.com";
 
   _getCurrentUserLocation() async {
-    final LocationData location = await Location().getLocation();
-    LatLng center = LatLng(location.latitude!, location.longitude!);
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LatLng center;
 
+    Location location = new Location();
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_serviceEnabled && _permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+    }
+
+    if(_serviceEnabled && _permissionGranted == PermissionStatus.granted){
+       final LocationData location = await Location().getLocation();
+        center = LatLng(location.latitude!, location.longitude!);
+    }
+    else{
+      // Caso o usuário não passe o ponto inicial, usa-se um ponto fixo
+      center = LatLng(-24.044453, -52.377743);
+    }
+    
     await _getMarkers(center);
 
-    setState(() {
-      _center = center;
-      _inProgress = true;
-    });
+        setState(() {
+          _center = center;
+          _inProgress = true;
+        });
   }
 
   _loadImage(String? typeIcon) async {

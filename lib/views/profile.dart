@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:date_time_picker/date_time_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:app_visibility/models/user_update.dart';
 import 'package:app_visibility/routes/routes.dart';
+import 'package:date_time_picker/date_time_picker.dart';
+import 'package:app_visibility/models/user_update.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -16,6 +16,7 @@ class MapScreenState extends State<ProfilePage>
   var _phoneNumber;
   var _birthDate;
   bool _status = true;
+  FlutterSecureStorage storage = new FlutterSecureStorage();
   final FocusNode myFocusNode = FocusNode();
   Dio dio = new Dio();
   AppRoutes appRoutes = new AppRoutes();
@@ -24,9 +25,14 @@ class MapScreenState extends State<ProfilePage>
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Future loadFields() async {
-    final prefs = await SharedPreferences.getInstance();
-    final id = prefs.getInt('token');
-    final response = await dio.get('$baseUrl/users/$id');
+    Map<String, String> userData = await storage.readAll();
+    String url = '$baseUrl/users/${userData['id']}';
+    final response = await dio.get(url,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${userData['token']}',
+          },
+        ));
 
     return response;
   }
@@ -39,10 +45,10 @@ class MapScreenState extends State<ProfilePage>
       print(response);
 
       setState(() {
-              _name = response.data['name'];
-              _phoneNumber = response.data['phone_number'];
-              _birthDate = response.data['birth_date'];
-          });
+        _name = response.data['name'];
+        _phoneNumber = response.data['phone_number'];
+        _birthDate = response.data['birth_date'];
+      });
     });
   }
 
@@ -59,17 +65,24 @@ class MapScreenState extends State<ProfilePage>
           phoneNumber: _formData['phoneNumber'] as String,
           birthDate: _formData['birthDate'] as String);
 
-      final prefs = await SharedPreferences.getInstance();
+      Map<String, String> userData = await storage.readAll();
 
-      final userId = prefs.getInt('token');
-
-      print(userId);
+      print(userData['id']);
       print(userUpdate.toJson());
 
       try {
-        String url = '$baseUrl/users/$userId';
+        print(userData['id']);
 
-        await dio.patch(url, data: userUpdate.toJson());
+        String url = '$baseUrl/users/${userData['id']}';
+
+
+        await dio.patch(url,
+            data: userUpdate.toJson(),
+            options: Options(
+              headers: {
+                'Authorization': 'Bearer ${userData['token']}',
+              },
+            ));
 
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Informações Pessoais Atualizadas com sucesso.'),

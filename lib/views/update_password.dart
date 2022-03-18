@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:app_visibility/models/update_password.dart'
     as updatePasswordModel;
 
@@ -12,6 +12,7 @@ class UpdatePassword extends StatefulWidget {
 class _UpdatePasswordState extends State<UpdatePassword> {
   Dio dio = new Dio();
   final _formData = Map<String, Object>();
+  FlutterSecureStorage storage = new FlutterSecureStorage();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String baseUrl = "https://visibility-production-api.herokuapp.com";
 
@@ -25,17 +26,21 @@ class _UpdatePasswordState extends State<UpdatePassword> {
           currentPassword: _formData['currentPassword'] as String,
           newPassword: _formData['newPassword'] as String);
 
-      final prefs = await SharedPreferences.getInstance();
+      Map<String, String> userData = await storage.readAll();
 
-      final userId = prefs.getInt('token');
-
-      print(userId);
+      print(userData['id']);
       print(updatePassword.toJson());
 
       try {
-        String url = '$baseUrl/users/passwords/$userId';
+        String url = '$baseUrl/users/passwords/${userData['id']}';
 
-        await dio.patch(url, data: updatePassword.toJson());
+        await dio.patch(url,
+            data: updatePassword.toJson(),
+            options: Options(
+              headers: {
+                'Authorization': 'Bearer ${userData['token']}',
+              },
+            ));
 
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Senha atualizada com sucesso'),
@@ -43,7 +48,6 @@ class _UpdatePasswordState extends State<UpdatePassword> {
         ));
 
         Navigator.pop(context);
-
       } on DioError catch (error) {
         print(error);
         showDialog(

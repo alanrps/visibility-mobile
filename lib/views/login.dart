@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:app_visibility/routes/routes.dart';
 import 'package:app_visibility/models/authenticate.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -13,9 +13,64 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   AppRoutes appRoutes = new AppRoutes();
   Authenticate _formData = new Authenticate();
+  final storage = new FlutterSecureStorage();
   final _formKey = GlobalKey<FormState>();
   Dio dio = new Dio();
   String baseUrl = "https://visibility-production-api.herokuapp.com";
+  bool _inProgress = false;
+
+  Future submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      setState(() {
+        _inProgress = true;
+      });
+
+      Response response = await dio.post('$baseUrl/authenticate', data: {
+        'email': _formData.email,
+        'password': _formData.password
+      }).catchError((err) {
+        setState(() {
+          _inProgress = false;
+        });
+
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Credenciais inválidas"),
+                content: Text("Senha incorreta."),
+                actions: [
+                  TextButton(
+                    child: Text("Ok"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ],
+              );
+            });
+      });
+
+      print(response.data['token']);
+
+      if (response.data['token'] != null) {
+        final String token = response.data['token'];
+        _formKey.currentState!.reset();
+        
+        Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+
+        await storage.write(key: 'id', value: decodedToken['id'].toString());
+        await storage.write(key: 'token', value: response.data['token']);
+
+        Navigator.pushReplacementNamed(context, appRoutes.getHome);
+      }
+      setState(() {
+          _inProgress = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,13 +150,27 @@ class _LoginState extends State<Login> {
                           style: TextStyle(color: Colors.black),
                         ),
                         onPressed: () {
-                          Navigator.of(context).pushNamed(appRoutes.recoveryPassword);
+                          Navigator.of(context)
+                              .pushNamed(appRoutes.recoveryPassword);
                         },
                       ),
                     ),
                     SizedBox(
                       height: 40,
                     ),
+                    if (_inProgress == true) ...[
+                        Container(
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.black,
+                              value: null,
+                            ),
+                          ),
+                        ),
+                         SizedBox(
+                          height: 40,
+                        ),
+                    ],
                     Container(
                         height: 50,
                         alignment: Alignment.centerLeft,
@@ -126,54 +195,7 @@ class _LoginState extends State<Login> {
                                     color: Colors.white,
                                   ),
                                 ),
-                                onPressed: () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    _formKey.currentState!.save();
-
-                                    Response response = await dio
-                                        .post('$baseUrl/authenticate', data: {
-                                      'email': _formData.email,
-                                      'password': _formData.password
-                                    }).catchError((err) {
-                                      showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title:
-                                                  Text("Credenciais inválidas"),
-                                              content: Text(
-                                                  "Usuário ou senha incorreto."),
-                                              actions: [
-                                                TextButton(
-                                                  child: Text("Ok"),
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                )
-                                              ],
-                                            );
-                                          });
-                                    });
-
-                                    print(response.data['token']);
-
-                                    if (response.data['token'] != null) {
-                                          final String token = response.data['token'];
-
-                                          _formKey.currentState!.reset();
-
-                                          Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-
-                                          print(decodedToken);
-
-                                          final prefs = await SharedPreferences.getInstance();
-
-                                          prefs.setInt('token', decodedToken['id']);
-
-                                      Navigator.pushReplacementNamed(context, appRoutes.getHome);
-                                  }}
-                                }
-                                ))),
+                                onPressed: () => submitForm()))),
                     SizedBox(
                       height: 10,
                     ),
@@ -189,11 +211,10 @@ class _LoginState extends State<Login> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
-                            
                           ),
                         ),
-                        onPressed: () => 
-                          Navigator.of(context).pushNamed(appRoutes.signup),
+                        onPressed: () =>
+                            Navigator.of(context).pushNamed(appRoutes.signup),
                       ),
                     ),
                     SizedBox(

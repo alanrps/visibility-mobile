@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:app_visibility/models/marker.dart';
 import 'package:app_visibility/routes/routes.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class FormCreateMark extends StatefulWidget {
   @override
@@ -14,6 +15,7 @@ class _FormCreateMark extends State<FormCreateMark> {
   AppRoutes appRoutes = new AppRoutes();
   Dio dio = new Dio();
   Marker marker = new Marker();
+  FlutterSecureStorage storage = new FlutterSecureStorage();
   bool _inProgress = false;
   String baseUrl = "https://visibility-production-api.herokuapp.com";
   bool _isValid = true;
@@ -143,7 +145,6 @@ class _FormCreateMark extends State<FormCreateMark> {
       _verifyDropDownSpaceType();
     }
 
-    print("deu não");
     print(_isValid);
 
     if (_isValid && _formKey.currentState!.validate()) {
@@ -156,8 +157,11 @@ class _FormCreateMark extends State<FormCreateMark> {
         marker.classify = accessibilityTypes[_selectedAcessibilityType!];
       }
 
+      Map<String, String> userData = await storage.readAll();
+
       final markerData = {
         'marker': {
+          'user_id': int.parse(userData['id'] as String),
           'markers_type_id': marker.typeMarker,
           'category_id': marker.category,
         },
@@ -180,7 +184,13 @@ class _FormCreateMark extends State<FormCreateMark> {
 
       try {
         final String url = '$baseUrl/markers';
-        await dio.post(url, data: markerData);
+        await dio.post(url,
+            data: markerData,
+            options: Options(
+              headers: {
+                'Authorization': 'Bearer ${userData['token']}',
+              },
+            ));
       } catch (e) {
         print(e);
       }
@@ -357,6 +367,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                         ),
                         TextFormField(
                           autofocus: true,
+                          textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.name,
                           style:
                               new TextStyle(color: Colors.black, fontSize: 20),
@@ -385,6 +396,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                         ),
                         TextFormField(
                           autofocus: true,
+                          textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.name,
                           style: new TextStyle(color: Colors.black),
                           validator: (value) {
