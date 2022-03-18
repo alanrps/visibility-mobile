@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.app_visibility">
    <application
-        android:label="app_visibility"
+        android:label="Visibility"
         android:icon="@mipmap/ic_launcher">
          <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="AIzaSyBUA-Zn5vgtuYNlWMuv55HYkrmqyRKyGMM"/>
