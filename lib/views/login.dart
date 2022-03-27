@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:app_visibility/routes/routes.dart';
 import 'package:app_visibility/models/authenticate.dart';
+import 'package:app_visibility/shared/config.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Login extends StatefulWidget {
@@ -16,7 +17,6 @@ class _LoginState extends State<Login> {
   final storage = new FlutterSecureStorage();
   final _formKey = GlobalKey<FormState>();
   Dio dio = new Dio();
-  String baseUrl = "https://visibility-production-api.herokuapp.com";
   bool _inProgress = false;
 
   Future submitForm() async {
@@ -27,13 +27,15 @@ class _LoginState extends State<Login> {
         _inProgress = true;
       });
 
-      Response response = await dio.post('$baseUrl/authenticate', data: {
+      Response response = await dio.post('${Config.baseUrl}/authenticate', data: {
         'email': _formData.email,
         'password': _formData.password
       }).catchError((err) {
         setState(() {
           _inProgress = false;
         });
+
+        print(err);
 
         showDialog(
             context: context,
@@ -96,7 +98,6 @@ class _LoginState extends State<Login> {
                     ),
                     TextFormField(
                       textInputAction: TextInputAction.next,
-                      autofocus: true,
                       keyboardType: TextInputType.emailAddress,
                       style: new TextStyle(color: Colors.black),
                       decoration: InputDecoration(
@@ -117,7 +118,6 @@ class _LoginState extends State<Login> {
                           setState(() => _formData.email = email),
                     ),
                     TextFormField(
-                      autofocus: true,
                       obscureText: true,
                       keyboardType: TextInputType.text,
                       style: new TextStyle(color: Colors.black),

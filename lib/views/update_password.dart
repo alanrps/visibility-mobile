@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:app_visibility/shared/config.dart';
 import 'package:app_visibility/models/update_password.dart'
     as updatePasswordModel;
 
@@ -14,7 +15,6 @@ class _UpdatePasswordState extends State<UpdatePassword> {
   final _formData = Map<String, Object>();
   FlutterSecureStorage storage = new FlutterSecureStorage();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String baseUrl = "https://visibility-production-api.herokuapp.com";
 
   void _submitForm() async {
     print(_formData);
@@ -32,7 +32,7 @@ class _UpdatePasswordState extends State<UpdatePassword> {
       print(updatePassword.toJson());
 
       try {
-        String url = '$baseUrl/users/passwords/${userData['id']}';
+        String url = '${Config.baseUrl}/users/passwords/${userData['id']}';
 
         await dio.patch(url,
             data: updatePassword.toJson(),
@@ -85,108 +85,114 @@ class _UpdatePasswordState extends State<UpdatePassword> {
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
 
-    return Material(
-        child: Container(
-            padding: EdgeInsets.only(top: 100, left: 20, right: 20, bottom: 0),
-            color: Colors.grey[100],
-            child: Form(
-              key: _formKey,
-              child: ListView(
-                scrollDirection: Axis.vertical,
-                children: [
-                  Text(
-                    "Redefinir minha senha",
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        fontSize: 25),
-                    textAlign: TextAlign.center,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16.0),
-                    child: Text(
-                      "Preencha os campos abaixo.",
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Redefinição de Senha'),
+        backgroundColor: Colors.yellow[700],
+      ),
+      body: Material(
+          child: Container(
+              padding: EdgeInsets.only(top: 100, left: 20, right: 20, bottom: 0),
+              color: Colors.grey[100],
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  scrollDirection: Axis.vertical,
+                  children: [
+                    Text(
+                      "Redefinir minha senha",
                       style: const TextStyle(
-                          fontSize: 20,
-                          decorationStyle: TextDecorationStyle.solid),
-                      textAlign: TextAlign.start,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 50, bottom: 10.0),
-                    child: TextFormField(
-                      textInputAction: TextInputAction.next,
-                      autofocus: true,
-                      keyboardType: TextInputType.emailAddress,
-                      style: TextStyle(color: Colors.black),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Campo Obrigatório';
-                        }
-                        return null;
-                      },
-                      onChanged: (String currentPassword) {
-                        _formData['currentPassword'] = currentPassword;
-                      },
-                      decoration: InputDecoration(
-                        labelText: "Digite a senha atual",
-                        labelStyle: TextStyle(
+                          fontWeight: FontWeight.bold,
                           color: Colors.black,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16,
-                        ),
+                          fontSize: 25),
+                      textAlign: TextAlign.center,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Text(
+                        "Preencha os campos abaixo.",
+                        style: const TextStyle(
+                            fontSize: 20,
+                            decorationStyle: TextDecorationStyle.solid),
+                        textAlign: TextAlign.start,
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 250),
-                    child: TextFormField(
-                      textInputAction: TextInputAction.next,
-                      autofocus: true,
-                      keyboardType: TextInputType.emailAddress,
-                      style: TextStyle(color: Colors.black),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Campo Obrigatório';
-                        }
-                        return null;
-                      },
-                      onChanged: (String newPassword) {
-                        _formData['newPassword'] = newPassword;
-                      },
-                      decoration: InputDecoration(
-                        labelText: "Digite a senha nova",
-                        labelStyle: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                      padding: EdgeInsets.all(12),
-                      width: deviceWidth < 200 ? 80 : deviceWidth * 0.4,
-                      height: deviceHeight < 500
-                          ? 50
-                          : deviceHeight > 800
-                              ? 80
-                              : deviceHeight * 0.09,
-                      margin: const EdgeInsets.only(top: 16.0),
-                      child: ElevatedButton(
-                          style: TextButton.styleFrom(
-                            primary: Colors.black,
-                            backgroundColor: Colors.yellow[700],
-                            textStyle: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: Colors.black,
-                            ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 50, bottom: 10.0),
+                      child: TextFormField(
+                        obscureText: true,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.visiblePassword,
+                        style: TextStyle(color: Colors.black),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Campo Obrigatório';
+                          }
+                          return null;
+                        },
+                        onChanged: (String currentPassword) {
+                          _formData['currentPassword'] = currentPassword;
+                        },
+                        decoration: InputDecoration(
+                          labelText: "Digite a senha atual",
+                          labelStyle: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
                           ),
-                          child: Text("Redefinir senha"),
-                          onPressed: _submitForm)),
-                ],
-              ),
-            )));
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 250),
+                      child: TextFormField(
+                        obscureText: true,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.visiblePassword,
+                        style: TextStyle(color: Colors.black),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Campo Obrigatório';
+                          }
+                          return null;
+                        },
+                        onChanged: (String newPassword) {
+                          _formData['newPassword'] = newPassword;
+                        },
+                        decoration: InputDecoration(
+                          labelText: "Digite a senha nova",
+                          labelStyle: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                        padding: EdgeInsets.all(12),
+                        width: deviceWidth < 200 ? 80 : deviceWidth * 0.4,
+                        height: deviceHeight < 500
+                            ? 50
+                            : deviceHeight > 800
+                                ? 80
+                                : deviceHeight * 0.09,
+                        margin: const EdgeInsets.only(top: 16.0),
+                        child: ElevatedButton(
+                            style: TextButton.styleFrom(
+                              primary: Colors.black,
+                              backgroundColor: Colors.yellow[700],
+                              textStyle: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: Colors.black,
+                              ),
+                            ),
+                            child: Text("Redefinir senha"),
+                            onPressed: _submitForm)),
+                  ],
+                ),
+              ))),
+    );
   }
 }

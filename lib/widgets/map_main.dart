@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:app_visibility/models/place.dart';
+import 'package:app_visibility/shared/config.dart';
 
 class MapMain extends StatefulWidget {
   @override
@@ -52,7 +53,6 @@ class _MapMainState extends State<MapMain> {
   bool _inProgress = false;
   Dio dio = new Dio();
   late LatLng _center;
-  String baseUrl = "https://visibility-production-api.herokuapp.com";
 
   _getCurrentUserLocation() async {
     bool _serviceEnabled;
@@ -104,9 +104,7 @@ class _MapMainState extends State<MapMain> {
   }
 
   _getDialogData(int? id) async {
-    print(id);
-
-    String url = baseUrl + "/markers/places/$id";
+    String url = '${Config.baseUrl}/markers/places/$id';
 
     Response response = await dio.get(url);
 
@@ -128,7 +126,7 @@ class _MapMainState extends State<MapMain> {
   _getMarkers(LatLng coordinates) async {
     String currentPosition =
         "POINT(${coordinates.longitude} ${coordinates.latitude})";
-    String url = "$baseUrl/markers/$currentPosition";
+    String url = '${Config.baseUrl}/markers/$currentPosition';
 
     Response response = await dio.get(url);
 
@@ -155,7 +153,7 @@ class _MapMainState extends State<MapMain> {
   _getMarkersCamera(LatLng coordinates) async {
     String currentPosition =
         "POINT(${coordinates.longitude} ${coordinates.latitude})";
-    String url = "$baseUrl/markers/$currentPosition";
+    String url = '${Config.baseUrl}/markers/$currentPosition';
 
     Response response = await dio.get(url);
 

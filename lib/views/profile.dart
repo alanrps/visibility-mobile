@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:app_visibility/routes/routes.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:app_visibility/models/user_update.dart';
+import 'package:app_visibility/shared/config.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -21,12 +22,11 @@ class MapScreenState extends State<ProfilePage>
   Dio dio = new Dio();
   AppRoutes appRoutes = new AppRoutes();
   final _formData = Map<String, Object>();
-  String baseUrl = "https://visibility-production-api.herokuapp.com";
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Future loadFields() async {
     Map<String, String> userData = await storage.readAll();
-    String url = '$baseUrl/users/${userData['id']}';
+    String url = '${Config.baseUrl}/users/${userData['id']}';
     final response = await dio.get(url,
         options: Options(
           headers: {
@@ -71,10 +71,7 @@ class MapScreenState extends State<ProfilePage>
       print(userUpdate.toJson());
 
       try {
-        print(userData['id']);
-
-        String url = '$baseUrl/users/${userData['id']}';
-
+        String url = '${Config.baseUrl}/users/${int.parse(userData['id'] as String)}';
 
         await dio.patch(url,
             data: userUpdate.toJson(),

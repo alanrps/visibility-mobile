@@ -2,8 +2,8 @@
 // import 'package:app_visibility/widgets/Bars.dart';
 import 'package:flutter/material.dart';
 import 'package:app_visibility/widgets/map_main.dart';
-// import 'package:app_visibility/widgets/ranking.dart';
 import 'package:app_visibility/widgets/users.dart';
+import 'package:app_visibility/views/gamification.dart';
 import 'package:app_visibility/views/profile.dart';
 // import 'package:google_maps_flutter/google_maps_flutter.dart';
 // import 'package:app_visibility/routes/routes.dart';
@@ -97,17 +97,18 @@ class _HomeState extends State<Home> {
         // ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        enableFeedback: true,
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.yellow[800],
         onTap: _onItemTapped,
         items: const <BottomNavigationBarItem>[
-          // BottomNavigationBarItem(
-          //     icon: Icon(Icons.star),
-          //     label: "Ranking",
-          //     backgroundColor: Colors.red),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.emoji_events),
+              label: "Gamificação",
+              backgroundColor: Colors.red),
           BottomNavigationBarItem(
               icon: Icon(Icons.house),
-              label: "Home",
+              label: "Inicio",
               backgroundColor: Colors.green),
           BottomNavigationBarItem(
               icon: Icon(Icons.account_circle),
@@ -116,9 +117,9 @@ class _HomeState extends State<Home> {
         ],
       ),
       body: <Widget>[
+        Gamification(),
         MapMain(),
         ProfilePage(),
-        // Ranking(),
       ].elementAt(_selectedIndex),
     );
   }

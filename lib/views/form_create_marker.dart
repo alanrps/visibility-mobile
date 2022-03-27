@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:app_visibility/shared/config.dart';
 import 'package:location/location.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,6 @@ class _FormCreateMark extends State<FormCreateMark> {
   Marker marker = new Marker();
   FlutterSecureStorage storage = new FlutterSecureStorage();
   bool _inProgress = false;
-  String baseUrl = "https://visibility-production-api.herokuapp.com";
   bool _isValid = true;
   String? _dropDownErrorMarkerType;
   String? _dropDownErrorAcessibilityType;
@@ -183,7 +183,7 @@ class _FormCreateMark extends State<FormCreateMark> {
       }
 
       try {
-        final String url = '$baseUrl/markers';
+        final String url = '${Config.baseUrl}/markers';
         await dio.post(url,
             data: markerData,
             options: Options(
@@ -366,7 +366,6 @@ class _FormCreateMark extends State<FormCreateMark> {
                           height: 20,
                         ),
                         TextFormField(
-                          autofocus: true,
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.name,
                           style:
@@ -395,7 +394,6 @@ class _FormCreateMark extends State<FormCreateMark> {
                           height: 20,
                         ),
                         TextFormField(
-                          autofocus: true,
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.name,
                           style: new TextStyle(color: Colors.black),

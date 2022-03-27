@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:date_time_picker/date_time_picker.dart';
+import 'package:app_visibility/shared/config.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -13,7 +14,6 @@ class _RegisterState extends State<Register> {
   Dio dio = new Dio();
   final _form = GlobalKey<FormState>();
   final _formData = Map<String, Object?>();
-  String baseUrl = "https://visibility-production-api.herokuapp.com";
 
   Gender? _userGender = Gender.MALE;
   bool _showPassword = false, _showPasswordConfirmation = false;
@@ -44,7 +44,7 @@ class _RegisterState extends State<Register> {
       print(user.toJson());
       
       try {
-        String url = '$baseUrl/users';
+        String url = '${Config.baseUrl}/users';
         
         await dio.post(url, data: user.toJson());
         

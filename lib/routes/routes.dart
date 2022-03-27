@@ -4,7 +4,7 @@ import 'package:app_visibility/views/home.dart';
 import 'package:app_visibility/views/profile.dart';
 import 'package:app_visibility/views/recovery_password.dart';
 import 'package:app_visibility/views/update_password.dart';
-import 'package:app_visibility/widgets/ranking.dart';
+import 'package:app_visibility/widgets/scoreboard.dart';
 import 'package:app_visibility/widgets/map_main.dart';
 import 'package:app_visibility/widgets/users.dart';
 import '../views/form_create_marker.dart';
@@ -44,7 +44,7 @@ class AppRoutes {
       home: (context) => Home(),
       login: (context) => Login(),
       map: (context) => Map(),
-      ranking: (context) => Ranking(),
+      ranking: (context) => Scoreboard(),
       mapmain: (context) => MapMain(),
       users: (context) => Users(),
       profile: (context) => ProfilePage(),

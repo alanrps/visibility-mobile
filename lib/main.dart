@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:app_visibility/theme/style.dart';
 import 'package:app_visibility/routes/routes.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future main() async {
   // Carrega as váriaveis de ambiente do aquivo .env
