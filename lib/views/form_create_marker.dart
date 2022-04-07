@@ -4,6 +4,7 @@ import 'package:location/location.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:app_visibility/models/marker.dart';
+import 'package:app_visibility/utils/utils.dart';
 import 'package:app_visibility/routes/routes.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -137,6 +138,7 @@ class _FormCreateMark extends State<FormCreateMark> {
   final _formKey = GlobalKey<FormState>();
 
   void _submitForm() async {
+    List<String> updatedProperties = [];
     _verifyDropDownMarkerType();
 
     if (_selectedMarkerType != null && _selectedMarkerType == 'PLACE') {
@@ -158,6 +160,10 @@ class _FormCreateMark extends State<FormCreateMark> {
       }
 
       Map<String, String> userData = await storage.readAll();
+      
+      print(marker.typeMarker!);
+      print(marker.category!);
+      updatedProperties.addAll([marker.typeMarker!, marker.category!]);
 
       final markerData = {
         'marker': {
@@ -169,9 +175,24 @@ class _FormCreateMark extends State<FormCreateMark> {
           'latitude': marker.latitude,
           'longitude': marker.longitude
         },
-      };
+      };  
 
       if (marker.typeMarker == 'PLACE') {
+         Map<String, String> accessibilityMap = {
+          'ACCESSIBLE': 'accessible_place',
+          'NOT ACCESSIBLE': 'not_accessible_place',
+          'PARTIALLY': 'partially_accessible_place'
+        };
+
+         Map<String, String> spaceTypeMap = {
+          'PRIVATE': 'private_evaluations',
+          'PUBLIC': 'public_evaluations',
+        };
+
+        print(accessibilityMap[marker.classify]);
+        print(spaceTypeMap[marker.spaceType]!);
+        updatedProperties.addAll([accessibilityMap[marker.classify]!, spaceTypeMap[marker.spaceType]!]);
+        
         markerData.addAll({
           'place': {
             'name': marker.name,
@@ -183,14 +204,23 @@ class _FormCreateMark extends State<FormCreateMark> {
       }
 
       try {
-        final String url = '${Config.baseUrl}/markers';
-        await dio.post(url,
+        final String urlCreateMarker = '${Config.baseUrl}/markers';
+        final String urlUpdateInformationsAmount = '${Config.baseUrl}/users/${userData['id']}/informationAmount';
+        await dio.post(urlCreateMarker,
             data: markerData,
             options: Options(
               headers: {
                 'Authorization': 'Bearer ${userData['token']}',
               },
             ));
+        await dio.patch(urlUpdateInformationsAmount,
+           data: <String, List<String>>{ "updatedProperties": Utils.convertListToLowerCase(updatedProperties) },
+            options: Options(
+              headers: {
+                'Authorization': 'Bearer ${userData['token']}',
+              },
+            )
+        );
       } catch (e) {
         print(e);
       }
@@ -378,9 +408,6 @@ class _FormCreateMark extends State<FormCreateMark> {
                           },
                           onSaved: (String? newName) =>
                               setState(() => marker.name = newName),
-                          // onChanged: (String newName) {
-                          //   marker.name = newName;
-                          // },
                           decoration: InputDecoration(
                             labelText: "Nome do Lugar",
                             labelStyle: TextStyle(
@@ -403,7 +430,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                             }
                             return null;
                           },
-                          onChanged: (String newDescriptionPlace) {
+                          onSaved: (String? newDescriptionPlace) {
                             marker.description = newDescriptionPlace;
                           },
                           decoration: InputDecoration(

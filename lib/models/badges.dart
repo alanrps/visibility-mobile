@@ -4,11 +4,19 @@ part 'badges.g.dart';
 
 @JsonSerializable()
 class Badges {
-  int? id;
-  int? points;
   String? description;
+  String? category; // Não adicionei ao required, no entanto é preciso setar na mão
+  int? actionsAmount;
+  bool? acquired;
+  int? amount;
 
-  Badges({required this.id, required this.points, required this.description});
+  Badges({
+    required this.description,
+    required this.category,
+    required this.actionsAmount,
+    required this.acquired,
+    required this.amount,
+    });
 
   factory Badges.fromJson(Map<String, dynamic> json) =>
       _$BadgesFromJson(json);

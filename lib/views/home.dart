@@ -2,7 +2,7 @@
 // import 'package:app_visibility/widgets/Bars.dart';
 import 'package:flutter/material.dart';
 import 'package:app_visibility/widgets/map_main.dart';
-import 'package:app_visibility/widgets/users.dart';
+// import 'package:app_visibility/widgets/users.dart';
 import 'package:app_visibility/views/gamification.dart';
 import 'package:app_visibility/views/profile.dart';
 // import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -78,7 +78,7 @@ class _HomeState extends State<Home> {
   //   );
   // }
 
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
 
   void _onItemTapped(int index) {
     setState(() {

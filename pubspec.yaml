@@ -36,7 +36,6 @@ dependencies:
   dio: ^4.0.0
   wkt_parser: ^2.0.0
   geocore: ^0.7.0
-  # geocoding: ^1.0.5
   geolocator: ^7.7.0
   flutter_dotenv: ^5.0.2
   date_time_picker: ^2.1.0
@@ -44,6 +43,7 @@ dependencies:
   json_annotation: ^4.0.0
   jwt_decoder: ^2.0.1
   percent_indicator: ^4.0.0
+  syncfusion_flutter_charts: ^19.4.56
 
 analyzer:
   - enable-experiment:
