@@ -24,7 +24,7 @@ class _AchievementsState extends State<Achievements> {
     "place": "Lugares",
     "wheelchair_parking": "Vagas para Cadeirantes",
     "travel": "Viagem",
-    "transpont": "Transporte",
+    "transport": "Transporte",
     "supermarket": "Supermercado",
     "services": "Serviços",
     "leisure": "Lazer",

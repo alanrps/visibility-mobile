@@ -5,7 +5,7 @@ part 'categories.g.dart';
 @JsonSerializable()
 class Categories {
   int? travel;
-  int? transpont;
+  int? transport;
   int? supermarket;
   int? services;
   int? leisure;
@@ -17,7 +17,7 @@ class Categories {
 
   Categories({
     required this.travel,
-    required this.transpont,
+    required this.transport,
     required this.supermarket,
     required this.services,
     required this.leisure,

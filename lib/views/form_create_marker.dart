@@ -151,19 +151,19 @@ class _FormCreateMark extends State<FormCreateMark> {
 
     if (_isValid && _formKey.currentState!.validate()) {
       marker.typeMarker = markerTypes[_selectedMarkerType!];
-      marker.category = categories[_selectedCategory!];
-      marker.spaceType = spaceTypes[_selectedScapeType!];
+     
       _formKey.currentState!.save();
 
-      if (marker.typeMarker != '') {
+      if (marker.typeMarker != 'WHEELCHAIR_PARKING') {
+        marker.category = categories[_selectedCategory!];
+        marker.spaceType = spaceTypes[_selectedScapeType!];
         marker.classify = accessibilityTypes[_selectedAcessibilityType!];
+        updatedProperties.addAll([marker.typeMarker!, marker.category!]);
       }
 
       Map<String, String> userData = await storage.readAll();
       
-      print(marker.typeMarker!);
-      print(marker.category!);
-      updatedProperties.addAll([marker.typeMarker!, marker.category!]);
+      updatedProperties.addAll([marker.typeMarker!]);
 
       final markerData = {
         'marker': {
@@ -221,7 +221,7 @@ class _FormCreateMark extends State<FormCreateMark> {
               },
             )
         );
-      } catch (e) {
+       } catch (e) {
         print(e);
       }
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

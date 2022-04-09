@@ -12,6 +12,7 @@ import 'package:app_visibility/widgets/pieChart.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Informations extends StatefulWidget {
+
   @override
   _InformationsState createState() => _InformationsState();
 }
@@ -132,7 +133,7 @@ class _InformationsState extends State<Informations> {
       "place": "Locais",
       "wheelchairParking": "Vagas para Cadeirantes",
       "travel": "Viagem",
-      "transpont": "Transporte",
+      "transport": "Transporte",
       "supermarket": "Supermercado",
       "services": "Serviços",
       "leisure": "Lazer",
@@ -218,15 +219,21 @@ class _InformationsState extends State<Informations> {
                 Container(
                     child: IconButton(
                         icon: Icon(Icons.people_alt),
-                        onPressed: () =>
-                            Navigator.pushNamed(context, appRoutes.getRanking)),
+                        onPressed: () => {
+                          setState((){
+                            // controller.index = 1;
+                          })
+                        }),
                     decoration: BoxDecoration(
                         shape: BoxShape.circle, color: Colors.yellow[700])),
                 Container(
                     child: IconButton(
                         icon: Icon(Icons.emoji_events),
-                        onPressed: () =>
-                            Navigator.pushNamed(context, appRoutes.getBadges)),
+                        onPressed: () => {
+                          setState((){
+                            // controller.index = 1;
+                          })
+                        }),
                     decoration: BoxDecoration(
                         shape: BoxShape.circle, color: Colors.yellow[700])),
               ]),
