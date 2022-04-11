@@ -12,6 +12,9 @@ import 'package:app_visibility/widgets/pieChart.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Informations extends StatefulWidget {
+  TabController controller;
+
+  Informations(this.controller);
 
   @override
   _InformationsState createState() => _InformationsState();
@@ -36,6 +39,28 @@ class _InformationsState extends State<Informations> {
   Dio dio = new Dio();
   final i = 10;
   final n = 10;
+
+  Map<String, String> mapNames = {
+      "accessiblePlace": "Acessível",
+      "notAccessiblePlace": "Não Acessível",
+      "partiallyAccessiblePlace": "Parcialmente acessível",
+      "evaluations": "Avaliações",
+      "publicEvaluations": "Locais Públicos",
+      "privateEvaluations": "Locais Privados",
+      "place": "Locais",
+      "wheelchairParking": "Vagas para Cadeirantes",
+      "travel": "Viagem",
+      "transport": "Transporte",
+      "supermarket": "Supermercado",
+      "services": "Serviços",
+      "leisure": "Lazer",
+      "education": "Educação",
+      "food": "Alimentação",
+      "hospital": "Hospital",
+      "accomodation": "Hospedagem",
+      "finance": "Financias",
+    };
+
 
   // List<Map<String, dynamic>> _items = List.generate(
   //     10,
@@ -63,8 +88,7 @@ class _InformationsState extends State<Informations> {
     this._points = response.data['points'];
     this._evaluations = response.data['evaluations'];
 
-    InformationAmount informationsAmount =
-        InformationAmount.fromJson(response.data);
+    InformationAmount informationsAmount = InformationAmount.fromJson(response.data);
 
     Categories categories = Categories.fromJson(response.data);
 
@@ -111,6 +135,8 @@ class _InformationsState extends State<Informations> {
       },
     ];
 
+    
+
     setState(() {
       _informations = informationsAmount;
       _categories = categories;
@@ -122,27 +148,6 @@ class _InformationsState extends State<Informations> {
 
   List<Widget> _getListingStatus(classData) {
     List<Widget> widgets = [];
-
-    Map<String, String> mapNames = {
-      "accessiblePlace": "Acessível",
-      "notAccessiblePlace": "Não Acessível",
-      "partiallyAccessiblePlace": "Parcialmente acessível",
-      "evaluations": "Avaliações",
-      "publicEvaluations": "Locais Públicos",
-      "privateEvaluations": "Locais Privados",
-      "place": "Locais",
-      "wheelchairParking": "Vagas para Cadeirantes",
-      "travel": "Viagem",
-      "transport": "Transporte",
-      "supermarket": "Supermercado",
-      "services": "Serviços",
-      "leisure": "Lazer",
-      "education": "Educação",
-      "food": "Alimentação",
-      "hospital": "Hospital",
-      "accomodation": "Hospedagem",
-      "finance": "Financias",
-    };
 
     final dataJson = classData?.toJson();
 
@@ -221,7 +226,7 @@ class _InformationsState extends State<Informations> {
                         icon: Icon(Icons.people_alt),
                         onPressed: () => {
                           setState((){
-                            // controller.index = 1;
+                            widget.controller.index = 1;
                           })
                         }),
                     decoration: BoxDecoration(
@@ -231,7 +236,7 @@ class _InformationsState extends State<Informations> {
                         icon: Icon(Icons.emoji_events),
                         onPressed: () => {
                           setState((){
-                            // controller.index = 1;
+                            widget.controller.index = 2;
                           })
                         }),
                     decoration: BoxDecoration(
@@ -331,10 +336,15 @@ class _InformationsState extends State<Informations> {
                                                   this._openDialog = true;
                                                 });
 
-                                                List<ChartData> chartData =
-                                                    ChartData.generateChartData(
-                                                        childItem['chartData']
-                                                            .toJson());
+                                                Map<String, dynamic> dataJson = childItem['chartData'].toJson();
+                                                
+                                                Map<String, dynamic> chartData = dataJson.entries.fold({}, (value, element){
+                                                  value[mapNames[element.key]!] = element.value;
+
+                                                  return value;
+                                                });
+                                                
+                                                List<ChartData> chart = ChartData.generateChartData(chartData);
 
                                                 showDialog(
                                                     context: context,
@@ -344,11 +354,11 @@ class _InformationsState extends State<Informations> {
                                                         title: Text(
                                                             childItem['title']),
                                                         content: Container(
-                                                          width: 400,
+                                                          width: 600,
                                                           height: 350,
                                                           child: Chart()
                                                               .generateChart(
-                                                                  chartData),
+                                                                  chart),
                                                         ),
                                                         actions: [
                                                           TextButton(

@@ -39,13 +39,31 @@ class _MapMainState extends State<MapMain> {
     'PARTIALLY': 'Parcialmente'
   };
 
-  Map<String, Color> acessibilityTypesColors = {
+  Map<String, dynamic> acessibilityTypesColors = {
     'ACCESSIBLE': Colors.lightGreen,
     'NOT ACCESSIBLE': Colors.redAccent,
-    'PARTIALLY': Colors.yellow
+    'PARTIALLY': Colors.yellow[700]
   };
 
   Map<String, String> spaceTypes = {'PRIVATE': 'Privado', 'PUBLIC': 'Público'};
+
+   Map<String, String> mapNames = {
+    "evaluations": "Avaliações",
+    "public_evaluations": "Avaliações Públicas",
+    "private_evaluations": "Avaliações Privadas",
+    "place": "Lugares",
+    "wheelchair_parking": "Vagas para Cadeirantes",
+    "travel": "Viagem",
+    "transport": "Transporte",
+    "supermarket": "Supermercado",
+    "services": "Serviços",
+    "leisure": "Lazer",
+    "education": "Educação",
+    "food": "Comida",
+    "hospital": "Hospital",
+    "accomodation": "Alojamentos",
+    "finance": "Financias",
+  };
 
   Set<Marker> _markers = {};
   Place place = new Place();
@@ -111,11 +129,12 @@ class _MapMainState extends State<MapMain> {
     print(response.data);
 
     // if (response.data.length) {
-    place.markerId = response.data['marker_id'];
+    place.markerId = response.data['markerId'];
     place.name = response.data['name'];
     place.classify = response.data['classify'];
-    place.spaceType = response.data['space_type'];
+    place.spaceType = response.data['spaceType'];
     place.description = response.data['description'];
+    place.category = response.data['categoryId'];
     // }
 
     setState(() {
@@ -196,8 +215,6 @@ class _MapMainState extends State<MapMain> {
       _center.longitude,
     );
 
-    print(distanceToCenter);
-
     if (distanceToCenter < 500) {
       return;
     }
@@ -243,6 +260,7 @@ class _MapMainState extends State<MapMain> {
           ),
           if (_openDialog != false) ...[
             AlertDialog(
+              actionsAlignment: MainAxisAlignment.spaceBetween,
               scrollable: true,
               backgroundColor: place.classify != ''
                   ? acessibilityTypesColors[place.classify!]
@@ -261,17 +279,6 @@ class _MapMainState extends State<MapMain> {
                       height: 20,
                     )
                   ],
-                  if (place.name != '') ...[
-                    Text(
-                      "Nome do lugar",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(place.name!),
-                    SizedBox(
-                      height: 10,
-                    )
-                  ],
                   if (place.spaceType != '') ...[
                     Text(
                       "Tipo de Espaço",
@@ -283,6 +290,28 @@ class _MapMainState extends State<MapMain> {
                       height: 20,
                     )
                   ],
+                  if (place.category != '') ...[
+                    Text(
+                      "Categoria",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(mapNames[place.category?.toLowerCase()]!),
+                    SizedBox(
+                      height: 20,
+                    )
+                  ],
+                  if (place.name != '') ...[
+                    Text(
+                      "Nome do lugar",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(place.name!),
+                    SizedBox(
+                      height: 10,
+                    )
+                  ],
                   if (place.description != '') ...[
                     Text(
                       "Descrição",
@@ -290,21 +319,30 @@ class _MapMainState extends State<MapMain> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     Text(place.description!)
-                  ]
+                  ],
                 ],
               ),
               actions: [
-                TextButton(
-                  onPressed: () => {
-                    setState(() {
-                      _openDialog = false;
-                    })
-                  },
-                  style: TextButton.styleFrom(
-                    primary: Colors.black,
-                  ),
-                  child: Text("OK"),
+                IconButton(icon: Icon(Icons.chat), alignment: Alignment.centerLeft, onPressed: () => 
+                  Navigator.pushNamed(context, appRoutes.comments, arguments: {
+                    "markerId": place.markerId
+                  })
                 ),
+                IconButton(icon: Icon(Icons.create_sharp), alignment: Alignment.center, onPressed: () {
+                  Navigator.pushNamed(context, appRoutes.getUpdateMarker, arguments: {
+                    "markerId": place.markerId,
+                    "classify": place.classify,
+                    "spaceType": place.spaceType,
+                    "category": place.category,
+                    "name": place.name,
+                    "description": place.description
+                  });
+                }),
+                IconButton(icon: Icon(Icons.check_circle_rounded ), alignment: Alignment.center, onPressed: () => {
+                setState(() {
+                  _openDialog = false;
+                })
+                  })
               ],
             )
           ],

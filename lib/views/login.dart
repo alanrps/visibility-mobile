@@ -63,8 +63,11 @@ class _LoginState extends State<Login> {
         
         Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
 
+        print(decodedToken);
+
         await storage.write(key: 'id', value: decodedToken['id'].toString());
         await storage.write(key: 'token', value: response.data['token']);
+        await storage.write(key: 'name', value: decodedToken['name']);
 
         Navigator.pushReplacementNamed(context, appRoutes.getHome);
       }

@@ -147,8 +147,6 @@ class _FormCreateMark extends State<FormCreateMark> {
       _verifyDropDownSpaceType();
     }
 
-    print(_isValid);
-
     if (_isValid && _formKey.currentState!.validate()) {
       marker.typeMarker = markerTypes[_selectedMarkerType!];
      
@@ -409,6 +407,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                           onSaved: (String? newName) =>
                               setState(() => marker.name = newName),
                           decoration: InputDecoration(
+                            border: OutlineInputBorder(),
                             labelText: "Nome do Lugar",
                             labelStyle: TextStyle(
                               color: Colors.black,
@@ -435,6 +434,10 @@ class _FormCreateMark extends State<FormCreateMark> {
                           },
                           decoration: InputDecoration(
                             labelText: "Descrição do lugar",
+                            // border: InputBorder(
+                            //   borderSide: BorderSide.
+                            // ),
+                            border: OutlineInputBorder(),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.w400,

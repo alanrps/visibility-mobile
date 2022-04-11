@@ -9,14 +9,18 @@ import 'package:app_visibility/widgets/map_main.dart';
 import 'package:app_visibility/widgets/users.dart';
 import 'package:app_visibility/widgets/badges.dart';
 import '../views/form_create_marker.dart';
+import '../views/form_update_marker.dart';
+import '../views/comments.dart';
 import '../views/sign_up.dart';
 import '../views/login.dart';
 import '../widgets/map.dart';
+import '../views/test.dart';
 
 class AppRoutes {
   String login = "/";
   String home = "/home";
   String createMarker = "/createMarker";
+  String updateMarker = "/updateMarker";
   String map = "/map";
   String mapmain = "/mapmain";
   String users = "/users";
@@ -26,9 +30,12 @@ class AppRoutes {
   String updatePassword = '/updatePassword';
   String ranking = "/ranking";
   String badges = "/badges";
+  String teste = "/teste";
+  String comments = "/comments";
 
   String get getHome => this.home;
   String get getCreateMarker => this.createMarker;
+  String get getUpdateMarker => this.updateMarker;
   String get getLogin => this.login;
   String get getMap => this.map;
   String get getMapmain => this.mapmain;
@@ -39,11 +46,14 @@ class AppRoutes {
   String get getUpdatePassword => this.updatePassword;
   String get getRanking => this.ranking;
   String get getBadges => this.badges;
+  String get getTeste => this.teste;
+  String get getComments => this.comments;
 
   routes() {  
     return <String, WidgetBuilder>{
       signup: (context) => Register(),
       createMarker: (context) => FormCreateMark(),
+      updateMarker: (context) => FormUpdateMark(),
       home: (context) => Home(),
       login: (context) => Login(),
       map: (context) => Map(),
@@ -54,6 +64,8 @@ class AppRoutes {
       updatePassword: (context) => UpdatePassword(),
       ranking: (context) => Scoreboard(),
       badges: (context) => Achievements(),
+      teste: (context) => Teste(),
+      comments: (context) => Comments(),
     };
   }
 }

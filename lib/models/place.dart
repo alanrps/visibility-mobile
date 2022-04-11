@@ -4,6 +4,7 @@ class Place {
   String? classify;
   String? spaceType;
   String? description;
+  String? category;
 
   Place();
 }
