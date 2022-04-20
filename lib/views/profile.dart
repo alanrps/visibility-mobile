@@ -27,7 +27,7 @@ class MapScreenState extends State<ProfilePage>
   Future loadFields() async {
     Map<String, String> userData = await storage.readAll();
 
-    String url = '${Config.baseUrl}/markers/${userData['id']}/comments';
+    String url = '${Config.baseUrl}/users/${userData['id']}';
     final response = await dio.get(url,
         options: Options(
           headers: {
@@ -47,6 +47,8 @@ class MapScreenState extends State<ProfilePage>
 
       setState(() {
         _name = response.data['name'];
+        _phoneNumber = response.data['phone_number'];
+        _birthDate = response.data['birth_date'];
       });
     });
   }
