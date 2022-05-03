@@ -15,6 +15,7 @@ import '../views/sign_up.dart';
 import '../views/login.dart';
 import '../widgets/map.dart';
 import '../views/test.dart';
+import '../views/filter.dart';
 
 class AppRoutes {
   String login = "/";
@@ -57,14 +58,14 @@ class AppRoutes {
       home: (context) => Home(),
       login: (context) => Login(),
       map: (context) => Map(),
-      mapmain: (context) => MapMain(),
+      // mapmain: (context) => MapMain(),
       users: (context) => Users(),
       profile: (context) => ProfilePage(),
       recoveryPassword: (context) => RecoveryPassword(),
       updatePassword: (context) => UpdatePassword(),
       ranking: (context) => Scoreboard(),
       badges: (context) => Achievements(),
-      teste: (context) => Teste(),
+      teste: (context) => MyHomePage(),
       comments: (context) => Comments(),
     };
   }

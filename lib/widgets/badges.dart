@@ -15,6 +15,7 @@ class Achievements extends StatefulWidget {
 class _AchievementsState extends State<Achievements> {
   Dio dio = new Dio();
   List<Badges>? _badges;
+  List<Widget>? _cards;
   FlutterSecureStorage storage = new FlutterSecureStorage();
 
   Map<String, String> mapNames = {
@@ -35,38 +36,6 @@ class _AchievementsState extends State<Achievements> {
     "finance": "Financias",
   };
 
-  _getListData() {
-    
-    List<Widget> widgets = [];
-    for (final badge in this._badges!) {
-      widgets.add(
-        Card(
-          child: ListTile(
-            leading: FlutterLogo(),
-            title: Text('Descrição'),
-            subtitle: Text(badge.description as String),
-            trailing: new CircularPercentIndicator(
-              radius: 20.0,
-              lineWidth: 5.0,
-              percent: ((badge.amount)! * 100/ badge.actionsAmount!) / 100,
-              header: new Text('${badge.amount.toString()}/${badge.actionsAmount.toString()}'),
-              // center: new Icon(
-              //   Icons.person_pin,
-              //   size: 30.0,
-              //   color: Colors.blue,
-              // ),
-              backgroundColor: Colors.grey,
-              progressColor: badge.amount != badge.actionsAmount ? Colors.blue : Colors.green,
-            ),
-            onTap: () => {},
-          ),
-        ),
-      );
-    }
-
-    return widgets;
-  }
-
   _getUserAchievements() async {
     Map<String, String> userData = await storage.readAll();
 
@@ -77,7 +46,7 @@ class _AchievementsState extends State<Achievements> {
             headers: {
               'Authorization': 'Bearer ${userData['token']}',
             },
-          ));
+      ));
 
       final achievements = response.data;
 
@@ -89,16 +58,40 @@ class _AchievementsState extends State<Achievements> {
     }
   }
 
+  _getListData(List<Badges> badges) {
+    List<Widget> widgets = [];
+    
+    for (final badge in badges) {
+      widgets.add(
+        Card(
+          child: ListTile(
+            leading: FlutterLogo(),
+            title: Text('Descrição'),
+            subtitle: Text(badge.description as String),
+            trailing: new CircularPercentIndicator(
+              radius: 20.0,
+              lineWidth: 5.0,
+              percent: ((badge.amount)! * 100/ badge.actionsAmount!) / 100,
+              header: new Text('${badge.amount.toString()}/${badge.actionsAmount.toString()}'),
+              backgroundColor: Colors.grey,
+              progressColor: badge.amount != badge.actionsAmount ? Colors.blue : Colors.green,
+            ),
+            onTap: () => {},
+          ),
+        ),
+      );
+    }
+
+    setState(() {
+        _cards = widgets;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    _getUserAchievements().then((achievements) {
-      print(achievements);
-
-      setState(() {
-        _badges = achievements;
-      });
-    });
+    _getUserAchievements()
+    .then((achievements) => _getListData(achievements));
   }
 
   @override
@@ -106,30 +99,41 @@ class _AchievementsState extends State<Achievements> {
     return Container(
       color: Colors.grey[100],
       child: Center(
-          child: ListView(
-        scrollDirection: Axis.vertical,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Text(
-              'Conquistas',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-            ),
-          ),
-          if (_badges == null)
-            Container(
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: Colors.black,
-                  value: null,
-                ),
+          child: RefreshIndicator(
+            displacement: 150,
+            backgroundColor: Colors.white,
+            color: Colors.blue,
+            strokeWidth: 3,
+            triggerMode: RefreshIndicatorTriggerMode.onEdge,
+            onRefresh: () async {
+              List<Badges> achievements = await _getUserAchievements();
+              await _getListData(achievements);    
+            },
+            child: ListView(
+                  scrollDirection: Axis.vertical,
+                  children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Text(
+                'Conquistas',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
               ),
-            )
-          else
-            ..._getListData()
-        ],
-      )),
+            ),
+            if (this._cards == null)
+              Container(
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.black,
+                    value: null,
+                  ),
+                ),
+              )
+            else
+              ...this._cards!
+                  ],
+                ),
+          )),
     );
   }
 }

@@ -6,8 +6,8 @@ import 'package:app_visibility/models/categories.dart';
 import 'package:app_visibility/models/accessibility.dart';
 import 'package:app_visibility/models/place_types.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:app_visibility/models/evaluation_types.dart';
-import 'package:app_visibility/models/information_amount.dart';
+import 'package:app_visibility/models/marker_types.dart';
+import 'package:app_visibility/models/evaluations.dart';
 import 'package:app_visibility/widgets/pieChart.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -23,14 +23,16 @@ class Informations extends StatefulWidget {
 class _InformationsState extends State<Informations> {
   FlutterSecureStorage storage = new FlutterSecureStorage();
   AppRoutes appRoutes = new AppRoutes();
-  InformationAmount? _informations;
+  Evaluations? _informations;
   Categories? _categories;
   Accessibility? _accessibility;
   PlaceTypes? _placeTypes;
-  Evaluation? _evaluationTypes;
+  MarkerTypes? _evaluationTypes;
+  String? _description;
   int? _nextLevelPoints;
   int? _evaluations;
   int? _points;
+  int? _weeklyPoints;
   int? _level;
   List<ChartData>? _chartData;
   String? _chartType;
@@ -41,26 +43,25 @@ class _InformationsState extends State<Informations> {
   final n = 10;
 
   Map<String, String> mapNames = {
-      "accessiblePlace": "Acessível",
-      "notAccessiblePlace": "Não Acessível",
-      "partiallyAccessiblePlace": "Parcialmente acessível",
-      "evaluations": "Avaliações",
-      "publicEvaluations": "Locais Públicos",
-      "privateEvaluations": "Locais Privados",
-      "place": "Locais",
-      "wheelchairParking": "Vagas para Cadeirantes",
-      "travel": "Viagem",
-      "transport": "Transporte",
-      "supermarket": "Supermercado",
-      "services": "Serviços",
-      "leisure": "Lazer",
-      "education": "Educação",
-      "food": "Alimentação",
-      "hospital": "Hospital",
-      "accomodation": "Hospedagem",
-      "finance": "Financias",
-    };
-
+    "accessiblePlace": "Acessível",
+    "notAccessiblePlace": "Não Acessível",
+    "partiallyAccessiblePlace": "Parcialmente acessível",
+    "evaluations": "Avaliações",
+    "publicEvaluations": "Locais Públicos",
+    "privateEvaluations": "Locais Privados",
+    "place": "Locais",
+    "wheelchairParking": "Vagas para Cadeirantes",
+    "travel": "Viagem",
+    "transport": "Transporte",
+    "supermarket": "Supermercado",
+    "services": "Serviços",
+    "leisure": "Lazer",
+    "education": "Educação",
+    "food": "Alimentação",
+    "hospital": "Hospital",
+    "accomodation": "Hospedagem",
+    "finance": "Financias",
+  };
 
   // List<Map<String, dynamic>> _items = List.generate(
   //     10,
@@ -86,9 +87,11 @@ class _InformationsState extends State<Informations> {
     this._nextLevelPoints = response.data['nextLevelPoints'];
     this._level = response.data['level'];
     this._points = response.data['points'];
+    this._weeklyPoints = response.data['weeklyPoints'];
     this._evaluations = response.data['evaluations'];
+    this._description = response.data['description'];
 
-    InformationAmount informationsAmount = InformationAmount.fromJson(response.data);
+    Evaluations informationsAmount = Evaluations.fromJson(response.data);
 
     Categories categories = Categories.fromJson(response.data);
 
@@ -96,7 +99,7 @@ class _InformationsState extends State<Informations> {
 
     PlaceTypes placetypes = PlaceTypes.fromJson(response.data);
 
-    Evaluation evaluations = Evaluation.fromJson(response.data);
+    MarkerTypes evaluations = MarkerTypes.fromJson(response.data);
 
     _fatherItems = [
       {
@@ -134,8 +137,6 @@ class _InformationsState extends State<Informations> {
         ]
       },
     ];
-
-    
 
     setState(() {
       _informations = informationsAmount;
@@ -204,7 +205,7 @@ class _InformationsState extends State<Informations> {
             else ...[
               Container(
                 child: Text(
-                  '1',
+                  '${_level}',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
@@ -217,33 +218,32 @@ class _InformationsState extends State<Informations> {
                 padding: EdgeInsets.all(45.0),
               ),
               SizedBox(
-                height: 10,
+                height: 5,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                Container(
-                    child: IconButton(
-                        icon: Icon(Icons.people_alt),
-                        onPressed: () => {
-                          setState((){
-                            widget.controller.index = 1;
-                          })
-                        }),
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle, color: Colors.yellow[700])),
-                Container(
-                    child: IconButton(
-                        icon: Icon(Icons.emoji_events),
-                        onPressed: () => {
-                          setState((){
-                            widget.controller.index = 2;
-                          })
-                        }),
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle, color: Colors.yellow[700])),
-              ]),
+              Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                        Container(
+                          child: Text("Pontos Semanais: ${_weeklyPoints}"),
+                          margin: const EdgeInsets.all(15.0),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            borderRadius: new BorderRadius.all(Radius.circular(20)),
+                            border: Border.all(color: Colors.green, style: BorderStyle.solid, width: 2)
+                          ),
+                        ),
+                    
+                    Container(
+                      padding: EdgeInsets.only(top: 15.0),
+                      child: Text("${_description}"),
+                      // decoration: BoxDecoration(
+                      //     shape: BoxShape.circle,
+                      //     color: Colors.yellow[700]
+                      //     )
+                    ),
+                  ]),
               SizedBox(
-                height: 50,
+                height: 25,
               ),
               new LinearPercentIndicator(
                   center: Text(
@@ -307,82 +307,83 @@ class _InformationsState extends State<Informations> {
                               fatherItem['title'],
                               style: TextStyle(fontSize: 20),
                             )),
-                        body: Wrap(
-                        children: [
-                          for(final childItem in fatherItem['childItems'])
-                            ...[
-                              Wrap(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.only(
-                                          top: 20.0, bottom: 20.0),
-                                      margin: const EdgeInsets.only(left: 10.0),
-                                      alignment: Alignment.centerLeft,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            childItem['title'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black,
-                                                fontSize: 18),
-                                          ),
-                                          IconButton(
-                                              icon: Icon(Icons.insert_chart),
-                                              onPressed: () {
-                                                setState(() {
-                                                  this._openDialog = true;
-                                                });
-
-                                                Map<String, dynamic> dataJson = childItem['chartData'].toJson();
-                                                
-                                                Map<String, dynamic> chartData = dataJson.entries.fold({}, (value, element){
-                                                  value[mapNames[element.key]!] = element.value;
-
-                                                  return value;
-                                                });
-                                                
-                                                List<ChartData> chart = ChartData.generateChartData(chartData);
-
-                                                showDialog(
-                                                    context: context,
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return AlertDialog(
-                                                        title: Text(
-                                                            childItem['title']),
-                                                        content: Container(
-                                                          width: 600,
-                                                          height: 350,
-                                                          child: Chart()
-                                                              .generateChart(
-                                                                  chart),
-                                                        ),
-                                                        actions: [
-                                                          TextButton(
-                                                            child: Text("Ok"),
-                                                            onPressed: () {
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                            },
-                                                          )
-                                                        ],
-                                                      );
-                                                    });
-                                              })
-                                        ],
+                        body: Wrap(children: [
+                          for (final childItem in fatherItem['childItems']) ...[
+                            Wrap(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.only(
+                                      top: 20.0, bottom: 20.0),
+                                  margin: const EdgeInsets.only(left: 10.0),
+                                  alignment: Alignment.centerLeft,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        childItem['title'],
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                            fontSize: 18),
                                       ),
-                                    ),
-                                    ...childItem['statusData'](
-                                        childItem['chartData']),
-                                  ],
-                                )
-                            ]     
-                        ]
-                        ),
+                                      IconButton(
+                                          icon: Icon(Icons.insert_chart),
+                                          onPressed: () {
+                                            setState(() {
+                                              this._openDialog = true;
+                                            });
+
+                                            Map<String, dynamic> dataJson =
+                                                childItem['chartData'].toJson();
+
+                                            Map<String, dynamic> chartData =
+                                                dataJson.entries.fold({},
+                                                    (value, element) {
+                                              value[mapNames[element.key]!] =
+                                                  element.value;
+
+                                              return value;
+                                            });
+
+                                            List<ChartData> chart =
+                                                ChartData.generateChartData(
+                                                    chartData);
+
+                                            showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title: Text(
+                                                        childItem['title']),
+                                                    content: Container(
+                                                      width: 600,
+                                                      height: 350,
+                                                      child: Chart()
+                                                          .generateChart(chart),
+                                                    ),
+                                                    actions: [
+                                                      TextButton(
+                                                        child: Text("Ok"),
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                      )
+                                                    ],
+                                                  );
+                                                });
+                                          })
+                                    ],
+                                  ),
+                                ),
+                                ...childItem['statusData'](
+                                    childItem['chartData']),
+                              ],
+                            )
+                          ]
+                        ]),
                         isExpanded: fatherItem['isExpanded'],
                       ),
                     )

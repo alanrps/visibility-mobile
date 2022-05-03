@@ -5,7 +5,7 @@ part 'badges.g.dart';
 @JsonSerializable()
 class Badges {
   String? description;
-  String? category; // Não adicionei ao required, no entanto é preciso setar na mão
+  String? category;
   int? actionsAmount;
   bool? acquired;
   int? amount;

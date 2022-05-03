@@ -6,6 +6,7 @@ import 'package:app_visibility/models/marker.dart';
 import 'package:app_visibility/utils/utils.dart';
 import 'package:app_visibility/routes/routes.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:app_visibility/utils/notification_service.dart';
 
 class FormUpdateMark extends StatefulWidget {
   @override
@@ -25,7 +26,6 @@ class _FormUpdateMark extends State<FormUpdateMark> {
   int? _markerId;
   bool _inProgress = false;
   bool _isValid = true;
-  String? _dropDownErrorMarkerType;
   String? _dropDownErrorAcessibilityType;
   String? _dropDownErrorCategory;
   String? _dropDownErrorSpaceType;
@@ -51,8 +51,8 @@ class _FormUpdateMark extends State<FormUpdateMark> {
   String? _selectedScapeType;
   Map<String, String> spaceTypes = {'Privado': 'PRIVATE', 'Público': 'PUBLIC'};
   Map<String, String> spaceTypeMapEnglish = {
-          'PRIVATE': 'Privado',
-          'PUBLIC': 'Público',
+    'PRIVATE': 'Privado',
+    'PUBLIC': 'Público',
   };
 
   String? _selectedCategory;
@@ -147,8 +147,12 @@ class _FormUpdateMark extends State<FormUpdateMark> {
           // 'user_id': int.parse(userData['id'] as String),
       };
 
+      print(markerData);
+
       try {
         final String urlUpdateMarker = '${Config.baseUrl}/markers/${this._markerId}';
+        String urlUpdateInformationsAmount = '${Config.baseUrl}/users/${userData['id']}/informationAmount';
+
         await dio.patch(urlUpdateMarker,
             data: markerData,
             options: Options(
@@ -156,6 +160,36 @@ class _FormUpdateMark extends State<FormUpdateMark> {
                 'Authorization': 'Bearer ${userData['token']}',
               },
             ));
+        
+         final informationAmount = await dio.patch(urlUpdateInformationsAmount, data: <String, dynamic>{ 
+          "updatedProperties": ['edit_evaluations'],
+          "currentAction": "EE"
+          },
+            options: Options(
+              headers: {
+                'Authorization': 'Bearer ${userData['token']}',
+              },
+        ));
+
+        print(informationAmount.data[1]);
+
+        final achievements = informationAmount.data[1] as List<dynamic>;
+        print(achievements);
+
+        NotificationService n =  NotificationService();
+        int counter = 0;                  
+        await n.initState();
+
+        if(informationAmount.data[0]['updatedLevel'] == true){
+          await n.showNotification(counter, 'Avançou de nível!', 'Parabéns! você atingiu o nível ${informationAmount.data[0]['level']}', 'O pai é brabo mesmo', true);
+          counter += 1;
+        }
+        if(achievements.length >= 1){
+          for(Map<String, dynamic> achievement in achievements){
+            await n.showNotification(counter, 'Adquiriu uma conquista!', achievement['description'], 'O pai é brabo mesmo', false);
+            counter += 1;
+          }
+        }
       } catch (e) {
         print(e);
       }
@@ -163,7 +197,13 @@ class _FormUpdateMark extends State<FormUpdateMark> {
         content: Text('Marcação Atualizada com sucesso!'),
         duration: Duration(seconds: 2),
       ));
-      Navigator.pushNamed(context, '/home');
+      Navigator.pop(context, {
+        'name': this._name,
+        'description': this._description,
+        'spaceType': spaceTypes[_selectedScapeType!],
+        'classify': accessibilityTypes[_selectedAcessibilityType!],
+        'category': categories[_selectedCategory!],
+      });
     }
   }
 
@@ -171,9 +211,7 @@ class _FormUpdateMark extends State<FormUpdateMark> {
   Widget build(BuildContext context) {
     final arguments = ModalRoute.of(context)!.settings.arguments as Map?;
 
-    print(arguments);
-
-    if (arguments != null) {
+    if (arguments != null && _selectedAcessibilityType == null && _selectedCategory == null && _selectedScapeType == null && _name == null && _description == null) {
       _markerId = arguments["markerId"];
 
       setState(() {
@@ -269,6 +307,7 @@ class _FormUpdateMark extends State<FormUpdateMark> {
                             color: Colors.yellow[700],
                           ),
                           onChanged: (String? selectedAcessibleType) {
+                            print(selectedAcessibleType);
                             setState(() {
                               _selectedAcessibilityType = selectedAcessibleType;
                             });
@@ -303,8 +342,6 @@ class _FormUpdateMark extends State<FormUpdateMark> {
                             color: Colors.yellow[700],
                           ),
                           onChanged: (String? selectedCategory) {
-                            print(selectedCategory);
-
                             setState(() {
                               _selectedCategory = selectedCategory;
                             });

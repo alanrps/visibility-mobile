@@ -7,6 +7,14 @@ import 'package:app_visibility/models/marker.dart';
 import 'package:app_visibility/utils/utils.dart';
 import 'package:app_visibility/routes/routes.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:app_visibility/formatters/max_length_in_line_formatter.dart';
+import 'package:app_visibility/formatters/max_lines_formatter.dart';
+import 'package:app_visibility/utils/utils.dart';
+import 'package:app_visibility/models/badges.dart';
+import 'package:app_visibility/views/achievement_view.dart';
+import 'package:app_visibility/utils/notification_service.dart';
+import 'dart:io';
+
 
 class FormCreateMark extends StatefulWidget {
   @override
@@ -24,10 +32,24 @@ class _FormCreateMark extends State<FormCreateMark> {
   String? _dropDownErrorAcessibilityType;
   String? _dropDownErrorCategory;
   String? _dropDownErrorSpaceType;
+  final TextEditingController controller = TextEditingController();
+  final maxLength = 1000;
+  String _caractersCount = ''; 
 
   @override
   void initState() {
+    controller.addListener(() {
+      setState(() {});
+    });
     super.initState();
+  }
+
+  void showSnackBar(BuildContext context, String text) {
+    Scaffold.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(
+        content: Text(text),
+      ));
   }
 
   Future<LocationData> _getCurrentUserLocation() async {
@@ -138,6 +160,9 @@ class _FormCreateMark extends State<FormCreateMark> {
   final _formKey = GlobalKey<FormState>();
 
   void _submitForm() async {
+    print("COUNT");
+    print(_caractersCount);
+
     List<String> updatedProperties = [];
     _verifyDropDownMarkerType();
 
@@ -148,19 +173,21 @@ class _FormCreateMark extends State<FormCreateMark> {
     }
 
     if (_isValid && _formKey.currentState!.validate()) {
+      updatedProperties.add('evaluations');
+      
       marker.typeMarker = markerTypes[_selectedMarkerType!];
-     
+
       _formKey.currentState!.save();
 
       if (marker.typeMarker != 'WHEELCHAIR_PARKING') {
         marker.category = categories[_selectedCategory!];
         marker.spaceType = spaceTypes[_selectedScapeType!];
         marker.classify = accessibilityTypes[_selectedAcessibilityType!];
-        updatedProperties.addAll([marker.typeMarker!, marker.category!]);
+        updatedProperties.addAll([marker.typeMarker!, marker.category!, 'wheelchair_parking']);
       }
 
       Map<String, String> userData = await storage.readAll();
-      
+
       updatedProperties.addAll([marker.typeMarker!]);
 
       final markerData = {
@@ -173,24 +200,27 @@ class _FormCreateMark extends State<FormCreateMark> {
           'latitude': marker.latitude,
           'longitude': marker.longitude
         },
-      };  
+      };
 
       if (marker.typeMarker == 'PLACE') {
-         Map<String, String> accessibilityMap = {
+        Map<String, String> accessibilityMap = {
           'ACCESSIBLE': 'accessible_place',
           'NOT ACCESSIBLE': 'not_accessible_place',
           'PARTIALLY': 'partially_accessible_place'
         };
 
-         Map<String, String> spaceTypeMap = {
+        Map<String, String> spaceTypeMap = {
           'PRIVATE': 'private_evaluations',
           'PUBLIC': 'public_evaluations',
         };
 
         print(accessibilityMap[marker.classify]);
         print(spaceTypeMap[marker.spaceType]!);
-        updatedProperties.addAll([accessibilityMap[marker.classify]!, spaceTypeMap[marker.spaceType]!]);
-        
+        updatedProperties.addAll([
+          accessibilityMap[marker.classify]!,
+          spaceTypeMap[marker.spaceType]!
+        ]);
+
         markerData.addAll({
           'place': {
             'name': marker.name,
@@ -202,24 +232,47 @@ class _FormCreateMark extends State<FormCreateMark> {
       }
 
       try {
-        final String urlCreateMarker = '${Config.baseUrl}/markers';
-        final String urlUpdateInformationsAmount = '${Config.baseUrl}/users/${userData['id']}/informationAmount';
+        String urlCreateMarker = '${Config.baseUrl}/markers';
+        String urlUpdateInformationsAmount = '${Config.baseUrl}/users/${userData['id']}/informationAmount';
+
         await dio.post(urlCreateMarker,
             data: markerData,
             options: Options(
               headers: {
                 'Authorization': 'Bearer ${userData['token']}',
               },
-            ));
-        await dio.patch(urlUpdateInformationsAmount,
-           data: <String, List<String>>{ "updatedProperties": Utils.convertListToLowerCase(updatedProperties) },
+        ));
+
+        final informationAmount = await dio.patch(urlUpdateInformationsAmount, data: <String, dynamic>{ 
+          "updatedProperties": Utils.convertListToLowerCase(updatedProperties),
+          "currentAction": _caractersCount.length >= 200 ? "EP200" : "EP"
+          },
             options: Options(
               headers: {
                 'Authorization': 'Bearer ${userData['token']}',
               },
-            )
-        );
-       } catch (e) {
+        ));
+
+        print(informationAmount.data[1]);
+
+        final achievements = informationAmount.data[1] as List<dynamic>;
+        print(achievements);
+
+        NotificationService n =  NotificationService();
+        int counter = 0;                  
+        await n.initState();
+
+        if(informationAmount.data[0]['updatedLevel'] == true){
+          await n.showNotification(counter, 'Avançou de nível!', 'Parabéns! você atingiu o nível ${informationAmount.data[0]['level']}', 'O pai é brabo mesmo', true);
+          counter += 1;
+        }
+        if(achievements.length >= 1){
+          for(Map<String, dynamic> achievement in achievements){
+            await n.showNotification(counter, 'Adquiriu uma conquista!', achievement['description'], 'O pai é brabo mesmo', false);
+            counter += 1;
+          }
+        }
+      } catch (e) {
         print(e);
       }
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -232,6 +285,12 @@ class _FormCreateMark extends State<FormCreateMark> {
 
   @override
   Widget build(BuildContext context) {
+    double heightSizedBox = 150;
+    final int maxLength = 120;
+    final int maxLengthInLine = 20;
+
+    final int maxLines = 3;
+    final int maxLinesForced = 3;
     final arguments = ModalRoute.of(context)!.settings.arguments as Map?;
 
     if (arguments != null) {
@@ -419,31 +478,41 @@ class _FormCreateMark extends State<FormCreateMark> {
                         SizedBox(
                           height: 20,
                         ),
-                        TextFormField(
-                          textInputAction: TextInputAction.next,
-                          keyboardType: TextInputType.name,
-                          style: new TextStyle(color: Colors.black),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Campo Obrigatório';
-                            }
-                            return null;
-                          },
-                          onSaved: (String? newDescriptionPlace) {
-                            marker.description = newDescriptionPlace;
-                          },
-                          decoration: InputDecoration(
-                            labelText: "Descrição do lugar",
-                            // border: InputBorder(
-                            //   borderSide: BorderSide.
-                            // ),
-                            border: OutlineInputBorder(),
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w400,
-                              fontSize: 16,
+                        Column(
+                          children: [
+                           TextFormField(
+                            maxLength: 300,
+                            maxLines: heightSizedBox ~/ 20,
+                            textInputAction: TextInputAction.newline,
+                            keyboardType: TextInputType.name,
+                            style: new TextStyle(color: Colors.black),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Campo Obrigatório';
+                              }
+                              return null;
+                            },
+                            onSaved: (String? newDescriptionPlace) {
+                              marker.description = newDescriptionPlace;
+                            },
+                            onChanged: (String value) {
+                              setState(() {
+                                _caractersCount = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              labelText: "Descrição do lugar",
+                              border: OutlineInputBorder(),
+                              counterText: 'Quantidade caracteres: ${_caractersCount.length}',
+                              counterStyle: new TextStyle(color: Colors.black, fontSize: 12),
+                              labelStyle: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
+                          ],
                         ),
                         SizedBox(
                           height: 20,

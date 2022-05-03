@@ -1,16 +1,16 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'information_amount.g.dart';
+part 'evaluations.g.dart';
 
 @JsonSerializable()
-class InformationAmount {
+class Evaluations {
   int? evaluations;
   int? publicEvaluations;
   int? privateEvaluations;
   int? place;
   int? wheelchairParking;
 
-  InformationAmount({
+  Evaluations({
     required this.evaluations, 
     required this.publicEvaluations, 
     required this.privateEvaluations,
@@ -18,8 +18,8 @@ class InformationAmount {
     required this.wheelchairParking,
   });
 
-  factory InformationAmount.fromJson(Map<String, dynamic> json) =>
-      _$InformationAmountFromJson(json);
+  factory Evaluations.fromJson(Map<String, dynamic> json) =>
+      _$EvaluationsFromJson(json);
 
-  Map<String, dynamic> toJson() => _$InformationAmountToJson(this);
+  Map<String, dynamic> toJson() => _$EvaluationsToJson(this);
 }

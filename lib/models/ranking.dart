@@ -5,12 +5,12 @@ part 'ranking.g.dart';
 @JsonSerializable()
 class Ranking {
   String? name;
-  int? points;
+  int? weekly_points;
   int? level;
 
   Ranking({
     required this.name,
-    required this.points,
+    required this.weekly_points,
     required this.level,
   });
 

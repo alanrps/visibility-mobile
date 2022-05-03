@@ -96,13 +96,10 @@ class _HomeState extends State<Home> {
         title: Text('Visibility'),
         backgroundColor: Colors.yellow[700],
         actions: <Widget>[
-        if(_selectedIndex == 1)
-          IconButton(icon: Icon(Icons.search), onPressed: () {
-            showSearch(
-              context: context,
-              delegate: CustomSearchClass(),
-            );
-          })
+        // if(_selectedIndex == 1)
+        //   IconButton(icon: Icon(Icons.filter_list_outlined), onPressed: () {
+        //     Navigator.pushNamed(context, '/teste');
+        //   })
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -132,48 +129,4 @@ class _HomeState extends State<Home> {
       ].elementAt(_selectedIndex),
     );
   }
-}
-
-
-
-
-class CustomSearchClass extends SearchDelegate{
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    // here you will add the action you need in your search later we   will add a clear button.
-
-    return [
-      Text('asdasd'),
-      TextButton(onPressed: (){}, child: Text('fdsdfsdf'))
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    // here you will add the leading actions that will be shown before the search bar ( such a back button ) 
-    return Text('a');
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    // in this method you will build your search results widget and how would you like to view them on screen
-    return Text('b');
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    // you can use this method to show suggestions before the user start search or to view a real time search results as we will show later 
-    return Container(
-      child: Column(
-        children: [
-          Text('a'),
-          Text('a'),
-          Text('a'),
-          Text('a'),
-          Text('a'),
-        ],
-      ),
-    );
-  }
-  
 }

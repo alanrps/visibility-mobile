@@ -108,7 +108,7 @@ class _MapState extends State<Map> {
                     ),
                   ),
                 ),
-              )
+              ),
           ],
         )),
       ),

@@ -4,7 +4,8 @@ import 'package:comment_box/comment/comment.dart';
 import 'package:app_visibility/models/get_comments.dart';
 import 'package:app_visibility/models/insert_comment.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
+import 'package:app_visibility/views/achievement_view.dart';
+import 'package:app_visibility/utils/notification_service.dart';
 import 'package:dio/dio.dart';
 
 class Comments extends StatefulWidget {
@@ -77,7 +78,6 @@ class _CommentsState extends State<Comments> {
             child: ListTile(
               leading: GestureDetector(
                 onTap: () async {
-                  // Display the image in large form.
                   print("Comment Clicked");
                 },
                 child: Container(
@@ -145,6 +145,39 @@ class _CommentsState extends State<Comments> {
                     );
 
                     await insertComment(comment);
+
+                    Map<String, dynamic> userData = await storage.readAll();
+                    String urlUpdateInformationsAmount = '${Config.baseUrl}/users/${userData['id']}/informationAmount';
+
+                    final informationAmount = await dio.patch(urlUpdateInformationsAmount, data: <String, dynamic>{ 
+                        "updatedProperties": ['comments'],
+                        "currentAction": "C"
+                        },
+                          options: Options(
+                            headers: {
+                              'Authorization': 'Bearer ${userData['token']}',
+                            },
+                      ));
+
+                     print(informationAmount.data[1]);
+
+                    final achievements = informationAmount.data[1] as List<dynamic>;
+                    print(achievements);
+
+                    NotificationService n =  NotificationService();
+                    int counter = 0;                  
+                    await n.initState();
+
+                    if(informationAmount.data[0]['updatedLevel'] == true){
+                      await n.showNotification(counter, 'Avançou de nível!', 'Parabéns! você atingiu o nível ${informationAmount.data[0]['level']}', 'O pai é brabo mesmo', true);
+                      counter += 1;
+                    }
+                    if(achievements.length >= 1){
+                      for(Map<String, dynamic> achievement in achievements){
+                        await n.showNotification(counter, 'Adquiriu uma conquista!', achievement['description'], 'O pai é brabo mesmo', false);
+                        counter += 1;
+                      }
+                    }
 
                     commentController.clear();
                     FocusScope.of(context).unfocus();

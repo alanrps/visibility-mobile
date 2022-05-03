@@ -11,26 +11,21 @@ class Scoreboard extends StatefulWidget {
 
 class _ScoreboardState extends State<Scoreboard> {
   Dio dio = new Dio();
-  List<Ranking>? _users;
+  List<Widget>? _scoreboard;
   FlutterSecureStorage storage = new FlutterSecureStorage();
 
   @override
   void initState() {
     super.initState();
-    _getUsersScoreboard().then((usersScoreboard) {
-      print(usersScoreboard);
-
-      setState(() {
-        _users = usersScoreboard;
-      });
-    });
+    _getUsersScoreboard()
+      .then((usersScoreboard) => _getListData(usersScoreboard));
   }
 
-  _getListData() {
+  _getListData(List<Ranking> usersScoreboard) {
     List<Widget> widgets = [];
     int index = 1;
 
-    for (final user in this._users!) {
+    for (final user in usersScoreboard) {
       widgets.add(
         Card(
           child: ListTile(
@@ -52,7 +47,7 @@ class _ScoreboardState extends State<Scoreboard> {
             ),
             title: Text(user.name as String),
             trailing: Container(
-                child: Text('Pontuação: ${user.points}')),
+                child: Text('Pontuação: ${user.weekly_points}')),
             onTap: () => {},
           ),
         ),
@@ -60,7 +55,9 @@ class _ScoreboardState extends State<Scoreboard> {
       index += 1;
     }
 
-    return widgets;
+    setState(() {
+        _scoreboard = widgets;
+    });
   }
 
   // Nível: ${user.level} \n\n
@@ -93,30 +90,41 @@ class _ScoreboardState extends State<Scoreboard> {
     return Container(
       color: Colors.grey[100],
       child: Center(
-          child: ListView(
-        scrollDirection: Axis.vertical,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Text(
-              'Ranking de Contribuidores',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-            ),
-          ),
-          if (_users == null)
-            Container(
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: Colors.black,
-                  value: null,
-                ),
+          child: RefreshIndicator(
+            displacement: 150,
+            backgroundColor: Colors.white,
+            color: Colors.blue,
+            strokeWidth: 3,
+            triggerMode: RefreshIndicatorTriggerMode.onEdge,
+            onRefresh: () async {
+               List<Ranking> usersScoreboard = await _getUsersScoreboard();
+              await _getListData(usersScoreboard);
+            },
+            child: ListView(
+                  scrollDirection: Axis.vertical,
+                  children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Text(
+                'Ranking de Contribuidores',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
               ),
-            )
-          else
-            ..._getListData()
-        ],
-      )),
+            ),
+            if (this._scoreboard == null)
+              Container(
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.black,
+                    value: null,
+                  ),
+                ),
+              )
+            else
+              ...this._scoreboard!
+                  ],
+                ),
+          )),
     );
   }
 }

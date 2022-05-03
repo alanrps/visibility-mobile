@@ -1,4 +1,3 @@
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:app_visibility/widgets/badges.dart';
 import 'package:app_visibility/widgets/scoreboard.dart';

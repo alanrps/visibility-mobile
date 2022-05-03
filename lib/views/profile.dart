@@ -329,6 +329,8 @@ class MapScreenState extends State<ProfilePage>
                                       new Flexible(
                                         child: new DateTimePicker(
                                           initialValue: _birthDate,
+                                          enabled: !_status,
+                                          // locale: Locale('pt', 'BR'),
                                           // icon: Icon(
                                           //     Icons.calendar_today,
                                           //     color: Colors.black,

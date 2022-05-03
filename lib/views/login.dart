@@ -5,6 +5,8 @@ import 'package:app_visibility/routes/routes.dart';
 import 'package:app_visibility/models/authenticate.dart';
 import 'package:app_visibility/shared/config.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:app_visibility/views/achievement_view.dart';
+import 'package:app_visibility/utils/notification_service.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -69,7 +71,7 @@ class _LoginState extends State<Login> {
         await storage.write(key: 'token', value: response.data['token']);
         await storage.write(key: 'name', value: decodedToken['name']);
 
-        Navigator.pushReplacementNamed(context, appRoutes.getHome);
+        Navigator.pushNamed(context, appRoutes.getHome);
       }
       setState(() {
           _inProgress = false;
@@ -152,7 +154,7 @@ class _LoginState extends State<Login> {
                           textAlign: TextAlign.right,
                           style: TextStyle(color: Colors.black),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           Navigator.of(context)
                               .pushNamed(appRoutes.recoveryPassword);
                         },
