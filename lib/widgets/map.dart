@@ -48,8 +48,7 @@ class _MapState extends State<Map> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: Text('Selecione a Localização'),
           backgroundColor: Colors.yellow[700],
@@ -111,7 +110,6 @@ class _MapState extends State<Map> {
               ),
           ],
         )),
-      ),
-    );
+      );
   }
 }

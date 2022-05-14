@@ -119,12 +119,12 @@ class _RecoveryPasswordState extends State<RecoveryPassword> {
                                   : deviceHeight * 0.09,
                           child: ElevatedButton(
                               style: TextButton.styleFrom(
-                                primary: Colors.black,
-                                backgroundColor: Colors.yellow[700],
+                                primary: Colors.white,
+                                backgroundColor: Colors.green,
                                 textStyle: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                                  color: Colors.white,
                                 ),
                               ),
                               child: Text("Enviar para email"),

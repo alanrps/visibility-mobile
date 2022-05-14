@@ -630,8 +630,8 @@ class _FormCreateMark extends State<FormCreateMark> {
             icon: Icon(Icons.add),
             label: Text('Adicionar'),
             style: TextButton.styleFrom(
-              primary: Colors.black,
-              backgroundColor: Colors.yellow[700],
+              primary: Colors.white,
+              backgroundColor: Colors.green,
               elevation: 0,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),

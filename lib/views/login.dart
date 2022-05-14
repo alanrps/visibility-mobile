@@ -71,7 +71,7 @@ class _LoginState extends State<Login> {
         await storage.write(key: 'token', value: response.data['token']);
         await storage.write(key: 'name', value: decodedToken['name']);
 
-        Navigator.pushNamed(context, appRoutes.getHome);
+        Navigator.pushReplacementNamed(context, appRoutes.getHome);
       }
       setState(() {
           _inProgress = false;

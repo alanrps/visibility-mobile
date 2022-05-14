@@ -55,7 +55,7 @@ class _RegisterState extends State<Register> {
         duration: Duration(seconds: 2),
       ));
 
-      Navigator.pushNamed(context, '/');
+      Navigator.pop(context);
 
       } on DioError catch (error) {
         print(error);
@@ -287,14 +287,27 @@ class _RegisterState extends State<Register> {
                   onSaved: (value) => _formData['confirmPassword'] = value,
                   onChanged: (value) => _formData['confirmPassword'] = value,
                 ),
-                new Container(
-                  width: deviceWidth < 200 ? 100 : deviceWidth * 0.5,
-                  height: deviceHeight < 500 ? 50 : deviceHeight > 800 ? 80 : deviceHeight * 0.1, 
-                    margin: const EdgeInsets.only(top: 16.0),
-                    child: ElevatedButton(
-                        style: style,
-                        child: Text("Cadastrar"),
-                        onPressed: _submitForm)),
+                SizedBox(height: 10),
+                Container(
+                          padding: EdgeInsets.all(12),
+                          width: deviceWidth < 200 ? 80 : deviceWidth * 0.4,
+                          height: deviceHeight < 500
+                              ? 50
+                              : deviceHeight > 800
+                                  ? 80
+                                  : deviceHeight * 0.09,
+                          child: ElevatedButton(
+                              style: TextButton.styleFrom(
+                                primary: Colors.white,
+                                backgroundColor: Colors.green,
+                                textStyle: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              child: Text("Enviar para email"),
+                              onPressed: _submitForm))
               ])),
         ));
   }

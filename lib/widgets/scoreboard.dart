@@ -11,7 +11,7 @@ class Scoreboard extends StatefulWidget {
 
 class _ScoreboardState extends State<Scoreboard> {
   Dio dio = new Dio();
-  List<Widget>? _scoreboard;
+  List<Widget> _scoreboard = [];
   FlutterSecureStorage storage = new FlutterSecureStorage();
 
   @override
@@ -21,7 +21,7 @@ class _ScoreboardState extends State<Scoreboard> {
       .then((usersScoreboard) => _getListData(usersScoreboard));
   }
 
-  _getListData(List<Ranking> usersScoreboard) {
+  _getListData(List<Ranking> usersScoreboard){
     List<Widget> widgets = [];
     int index = 1;
 
@@ -41,7 +41,7 @@ class _ScoreboardState extends State<Scoreboard> {
                     fontSize: 30),
               ),
               decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
+                shape: BoxShape.circle,
                 color: Colors.yellow[700],
               ),
             ),
@@ -60,8 +60,6 @@ class _ScoreboardState extends State<Scoreboard> {
     });
   }
 
-  // Nível: ${user.level} \n\n
-
   _getUsersScoreboard() async {
     Map<String, String> userData = await storage.readAll();
 
@@ -76,8 +74,9 @@ class _ScoreboardState extends State<Scoreboard> {
 
       final achievements = response.data;
 
-      List<Ranking> usersInformations = List<Ranking>.from(
-          achievements.map((achievement) => Ranking.fromJson(achievement)));
+      print(achievements);
+
+      List<Ranking> usersInformations = List<Ranking>.from(achievements.map((achievement) => Ranking.fromJson(achievement)));
 
       return usersInformations;
     } catch (e) {
@@ -106,12 +105,12 @@ class _ScoreboardState extends State<Scoreboard> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: Text(
-                'Ranking de Contribuidores',
+                'Ranking Semanal',
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
               ),
             ),
-            if (this._scoreboard == null)
+            if (this._scoreboard.isEmpty)
               Container(
                 child: Center(
                   child: CircularProgressIndicator(
@@ -121,7 +120,7 @@ class _ScoreboardState extends State<Scoreboard> {
                 ),
               )
             else
-              ...this._scoreboard!
+              ...this._scoreboard
                   ],
                 ),
           )),

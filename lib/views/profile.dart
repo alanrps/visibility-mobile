@@ -361,8 +361,7 @@ class MapScreenState extends State<ProfilePage>
                             ),
                             dense: true,
                             onTap: () => {
-                              Navigator.pushNamed(
-                                  context, appRoutes.getUpdatePassword)
+                              Navigator.pushNamed(context, appRoutes.getUpdatePassword)
                             },
                           ),
                         ),
@@ -376,7 +375,7 @@ class MapScreenState extends State<ProfilePage>
                             ),
                             dense: true,
                             onTap: () => {
-                              Navigator.pushNamed(context, appRoutes.getLogin)
+                              Navigator.popAndPushNamed(context, appRoutes.getLogin)
                             },
                           ),
                         ),
