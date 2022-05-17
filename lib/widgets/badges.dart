@@ -18,22 +18,56 @@ class _AchievementsState extends State<Achievements> {
   List<Widget>? _cards;
   FlutterSecureStorage storage = new FlutterSecureStorage();
 
+  Map<String, Widget> iconsCategories = {
+    "evaluations": Icon(Icons.add_location_alt, color: Colors.black,),
+    "public_evaluations": Icon(Icons.fmd_good_outlined, color: Colors.black,),
+    "private_evaluations": Icon(Icons.fmd_good_rounded, color: Colors.black,),
+    "place": Icon(Icons.place, color: Colors.black,),
+    "wheelchair_parking": Icon(Icons.directions_car, color: Colors.black,),
+    "travel": Icon(Icons.card_travel, color: Colors.black,),
+    "transport": Icon(Icons.directions_bus_rounded, color: Colors.black,),
+    "supermarket": Icon(Icons.shopping_bag, color: Colors.black,),
+    "services": Icon(Icons.miscellaneous_services, color: Colors.black,),
+    "leisure": Icon(Icons.sports_soccer, color: Colors.black,),
+    "education": Icon(Icons.school, color: Colors.black,),
+    "food": Icon(Icons.food_bank_rounded, color: Colors.black,),
+    "hospital": Icon(Icons.medical_services, color: Colors.black,),
+    "accomodation": Icon(Icons.hotel, color: Colors.black,),
+    "finance": Icon(Icons.attach_money, color: Colors.black,),
+    "points": Icon(Icons.moving_rounded, color: Colors.black,),
+    "level": Icon(Icons.arrow_circle_up, color: Colors.black,),
+    "accessible_place": Icon(Icons.accessible, color: Colors.black,),
+    "not_accessible_place": Icon(Icons.not_accessible, color: Colors.black,),
+    "partially_accessible_place": Icon(Icons.error_rounded, color: Colors.black,),
+    "weekly_points": Icon(Icons.groups_rounded, color: Colors.black,),
+    "edit_evaluations": Icon(Icons.create_rounded, color: Colors.black,),
+    "comments": Icon(Icons.comment, color: Colors.black,),
+  };
+
   Map<String, String> mapNames = {
     "evaluations": "Avaliações",
-    "public_evaluations": "Avaliações Públicas",
-    "private_evaluations": "Avaliações Privadas",
+    "public_evaluations": "Avaliações públicas",
+    "private_evaluations": "Avaliações privadas",
     "place": "Lugares",
-    "wheelchair_parking": "Vagas para Cadeirantes",
+    "wheelchair_parking": "Vagas para cadeirantes",
     "travel": "Viagem",
     "transport": "Transporte",
     "supermarket": "Supermercado",
     "services": "Serviços",
     "leisure": "Lazer",
     "education": "Educação",
-    "food": "Comida",
+    "food": "Alimentação",
     "hospital": "Hospital",
-    "accomodation": "Alojamentos",
+    "accomodation": "Hospedagem",
     "finance": "Financias",
+    "points": "Pontos",
+    "level": "Nível",
+    "accessible_place": "Lugar acessível",
+    "not_accessible_place": "Lugar não acessível",
+    "partially_accessible_place": "Lugar parcialmente acessível",
+    "weekly_points": "Pontos semenais",
+    "edit_evaluations": "Avaliações editadas",
+    "comments": "Comentários",
   };
 
   _getUserAchievements() async {
@@ -62,19 +96,29 @@ class _AchievementsState extends State<Achievements> {
     List<Widget> widgets = [];
     
     for (final badge in badges) {
+      print(badge.category);
+      print(mapNames[badge.category]!);
+
       widgets.add(
         Card(
           child: ListTile(
-            leading: FlutterLogo(),
-            title: Text('Descrição'),
+            contentPadding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+            leading: Padding(
+              padding: const EdgeInsets.only(top: 5, bottom: 5, right: 5, left: 15),
+              child: iconsCategories[badge.category],
+            ),
+            title: Text(mapNames[badge.category]!),
             subtitle: Text(badge.description as String),
-            trailing: new CircularPercentIndicator(
-              radius: 20.0,
-              lineWidth: 5.0,
-              percent: ((badge.amount)! * 100/ badge.actionsAmount!) / 100,
-              header: new Text('${badge.amount.toString()}/${badge.actionsAmount.toString()}'),
-              backgroundColor: Colors.grey,
-              progressColor: badge.amount != badge.actionsAmount ? Colors.blue : Colors.green,
+            trailing: Padding(
+              padding: EdgeInsets.only(right: 15, left: 5),
+              child: new CircularPercentIndicator(
+                radius: 20.0,
+                lineWidth: 5.0,
+                percent: ((badge.amount)! * 100/ badge.actionsAmount!) / 100,
+                header: new Text('${badge.amount.toString()}/${badge.actionsAmount.toString()}'),
+                backgroundColor: Colors.grey,
+                progressColor: badge.amount != badge.actionsAmount ? Colors.blue : Colors.green,
+              ),
             ),
             onTap: () => {},
           ),

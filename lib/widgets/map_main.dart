@@ -62,9 +62,9 @@ class _MapMainState extends State<MapMain> {
     "services": "Serviços",
     "leisure": "Lazer",
     "education": "Educação",
-    "food": "Comida",
+    "food": "Alimentação",
     "hospital": "Hospital",
-    "accomodation": "Alojamentos",
+    "accomodation": "Hospedagem",
     "finance": "Financias",
   };
 
@@ -160,8 +160,7 @@ class _MapMainState extends State<MapMain> {
   _loadImage(String? typeIcon) async {
     String iconPath = icons[typeIcon!]!;
 
-    BitmapDescriptor icon =
-        await BitmapDescriptor.fromAssetImage(ImageConfiguration(), iconPath);
+    BitmapDescriptor icon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(), iconPath);
 
     return icon;
   }
@@ -413,6 +412,17 @@ class _MapMainState extends State<MapMain> {
                       setState(() {
                         _openDialog = false;
                       });
+                      
+                      // if(place.category != result.category){
+                      //   _markers.map((element) async {
+                      //     if(element.markerId == place.markerId){
+                      //       element.icon = await _loadImage(result['category_id']);
+                      //     }
+                      //   });
+                      // }
+
+                      
+
 
                       // if(result.isNotEmpty){
                       //   result.forEach((String key, dynamic value) {

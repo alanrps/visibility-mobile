@@ -180,12 +180,12 @@ class _UpdatePasswordState extends State<UpdatePassword> {
                         margin: const EdgeInsets.only(top: 16.0),
                         child: ElevatedButton(
                             style: TextButton.styleFrom(
-                              primary: Colors.black,
-                              backgroundColor: Colors.yellow[700],
+                              primary: Colors.white,
+                              backgroundColor: Colors.green,
                               textStyle: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
-                                color: Colors.black,
+                                color: Colors.white,
                               ),
                             ),
                             child: Text("Redefinir senha"),

@@ -18,9 +18,9 @@ class _MyHomePageState extends State<MyHomePage> {
     "SERVICES": "Serviços",
     "LEISURE": "Lazer",
     "EDUCATION": "Educação",
-    "FOOD": "Comida",
+    "FOOD": "Alimentação",
     "HOSPITAL": "Hospital",
-    "ACCOMODATION": "Alojamentos",
+    "ACCOMODATION": "Hospedagem",
     "FINANCE": "Financias",
   };
 
@@ -261,8 +261,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           padding: EdgeInsets.all(12),
                           child: ElevatedButton(
                               style: TextButton.styleFrom(
-                                primary: Colors.black,
-                                backgroundColor: Colors.yellow[700],
+                                primary: Colors.white,
+                                backgroundColor: Colors.green,
                                 // textStyle: TextStyle(
                                 //   fontSize: 18,
                                 // ),

@@ -334,43 +334,46 @@ class _InformationsState extends State<Informations> {
                                               this._openDialog = true;
                                             });
 
-                                            Map<String, dynamic> dataJson =
-                                                childItem['chartData'].toJson();
+                                            Map<String, dynamic> dataJson = childItem['chartData'].toJson();
+                                            
+                                            bool hasValues = false;
+                                            Map<String, dynamic> chartData = dataJson.entries.fold({}, (value, element) {
+                                              if(element.value != 0)
+                                                hasValues = true;
 
-                                            Map<String, dynamic> chartData =
-                                                dataJson.entries.fold({},
-                                                    (value, element) {
-                                              value[mapNames[element.key]!] =
-                                                  element.value;
+                                              value[mapNames[element.key]!] = element.value;
 
                                               return value;
                                             });
 
-                                            List<ChartData> chart =
-                                                ChartData.generateChartData(
-                                                    chartData);
+                                            List<ChartData> chart = ChartData.generateChartData(chartData);
 
                                             showDialog(
                                                 context: context,
                                                 builder:
                                                     (BuildContext context) {
                                                   return AlertDialog(
+                                                    actionsAlignment: MainAxisAlignment.center,
                                                     title: Text(
                                                         childItem['title']),
                                                     content: Container(
                                                       width: 600,
                                                       height: 350,
-                                                      child: Chart()
-                                                          .generateChart(chart),
+                                                      child: hasValues ? Chart().generateChart(chart) : Column(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                                        children: [
+                                                        Text('Ainda não há dados para exibir.')
+                                                      ],),
                                                     ),
                                                     actions: [
-                                                      TextButton(
-                                                        child: Text("Ok"),
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                      )
+                                                      IconButton(
+                                                        icon: Icon(Icons.check_circle_rounded),
+                                                        alignment: Alignment.bottomCenter,
+                                                        onPressed: () => {
+                                                              Navigator.of(context).pop()
+                                                        })
                                                     ],
                                                   );
                                                 });

@@ -124,8 +124,8 @@ class _CommentsState extends State<Comments> {
                 userImage:
                     "https://lh3.googleusercontent.com/a-/AOh14GjRHcaendrf6gU5fPIVd8GIl1OgblrMMvGUoCBj4g=s400",
                 child: commentChild(_comments),
-                labelText: 'Escreva um comentário...',
-                errorText: 'Comment cannot be blank',
+                labelText: 'Escreva um comentário...',  
+                errorText: 'Comment cannot be blank', 
                 withBorder: false,
                 sendButtonMethod: () async {
                   if (formKey.currentState!.validate()) {
