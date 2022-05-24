@@ -59,7 +59,7 @@ class _InformationsState extends State<Informations> {
     "education": "Educação",
     "food": "Alimentação",
     "hospital": "Hospital",
-    "accomodation": "Hospedagem",
+    "accommodation": "Hospedagem",
     "finance": "Financias",
   };
 
@@ -76,6 +76,8 @@ class _InformationsState extends State<Informations> {
   getInformationsAmount() async {
     Map<String, String> userData = await storage.readAll();
 
+    print(userData['id']);
+    
     Response response = await dio.get(
         '${Config.baseUrl}/users/${userData['id'] as String}/informationAmount',
         options: Options(
@@ -108,7 +110,7 @@ class _InformationsState extends State<Informations> {
         'isExpanded': false,
         'childItems': [
           {
-            'title': 'Tipos de Avaliações', // Incluir Total
+            'title': 'Tipos de Marcações', // Incluir Total
             'chartData': evaluations, //this._evaluationTypes,
             'statusData': _getListingStatus,
           }
@@ -348,6 +350,11 @@ class _InformationsState extends State<Informations> {
 
                                             List<ChartData> chart = ChartData.generateChartData(chartData);
 
+                                            // Navigator.pushNamed(context, appRoutes.getChart, arguments: {
+                                            //   "chartData": chart,
+                                            //   "title": childItem['title'],
+                                            // });
+
                                             showDialog(
                                                 context: context,
                                                 builder:
@@ -360,7 +367,7 @@ class _InformationsState extends State<Informations> {
                                                       width: 600,
                                                       height: 350,
                                                       child: hasValues ? Chart().generateChart(chart) : Column(
-                                                        mainAxisSize: MainAxisSize.min,
+                                                        mainAxisSize: MainAxisSize.max,
                                                         mainAxisAlignment: MainAxisAlignment.center,
                                                         crossAxisAlignment: CrossAxisAlignment.center,
                                                         children: [

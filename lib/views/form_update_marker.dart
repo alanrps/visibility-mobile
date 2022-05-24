@@ -29,10 +29,23 @@ class _FormUpdateMark extends State<FormUpdateMark> {
   String? _dropDownErrorAcessibilityType;
   String? _dropDownErrorCategory;
   String? _dropDownErrorSpaceType;
+  double heightSizedBox = 150;
+
+
+  FocusNode? focusNode1;
+  FocusNode? focusNode2;
+  FocusNode? focusNode3;
+  FocusNode? focusNode4;
+  FocusNode? focusNode5;
 
   @override
   void initState() {
     super.initState();
+    focusNode1 = FocusNode();
+    focusNode2 = FocusNode();
+    focusNode3 = FocusNode();
+    focusNode4 = FocusNode();
+    focusNode5 = FocusNode();
   }
 
   String? _selectedAcessibilityType;
@@ -153,13 +166,15 @@ class _FormUpdateMark extends State<FormUpdateMark> {
         final String urlUpdateMarker = '${Config.baseUrl}/markers/${this._markerId}';
         String urlUpdateInformationsAmount = '${Config.baseUrl}/users/${userData['id']}/informationAmount';
 
-        await dio.patch(urlUpdateMarker,
+        Response resultUpdateMarker = await dio.patch(urlUpdateMarker,
             data: markerData,
             options: Options(
               headers: {
                 'Authorization': 'Bearer ${userData['token']}',
               },
             ));
+
+        print(resultUpdateMarker.data);
         
          final informationAmount = await dio.patch(urlUpdateInformationsAmount, data: <String, dynamic>{ 
           "updatedProperties": ['edit_evaluations'],
@@ -198,10 +213,10 @@ class _FormUpdateMark extends State<FormUpdateMark> {
         duration: Duration(seconds: 2),
       ));
       Navigator.pop(context, {
-        'name': this._name,
-        'description': this._description,
-        'spaceType': spaceTypes[_selectedScapeType!],
-        'classify': accessibilityTypes[_selectedAcessibilityType!],
+        // 'name': this._name,
+        // 'description': this._description,
+        // 'spaceType': spaceTypes[_selectedScapeType!],
+        // 'classify': accessibilityTypes[_selectedAcessibilityType!],
         'category': categories[_selectedCategory!],
       });
     }
@@ -213,6 +228,8 @@ class _FormUpdateMark extends State<FormUpdateMark> {
 
     if (arguments != null && _selectedAcessibilityType == null && _selectedCategory == null && _selectedScapeType == null && _name == null && _description == null) {
       _markerId = arguments["markerId"];
+      print("MARKER ID DO PAI");
+      print(_markerId);
 
       setState(() {
         _selectedAcessibilityType = acessibilityTypesEnglish[arguments['classify']];
@@ -246,6 +263,8 @@ class _FormUpdateMark extends State<FormUpdateMark> {
                         height: 20,
                       ),
                       TextFormField(
+                        focusNode: focusNode1,
+                        onTap: () => focusNode1?.requestFocus(),
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.name,
                         initialValue: arguments?['name'],
@@ -260,7 +279,7 @@ class _FormUpdateMark extends State<FormUpdateMark> {
                             setState(() => this._name = newName),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: "Nome do Lugar",
+                          labelText: "Nome do local",
                           labelStyle: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.w400,
@@ -272,7 +291,11 @@ class _FormUpdateMark extends State<FormUpdateMark> {
                         height: 20,
                       ),
                       TextFormField(
-                        textInputAction: TextInputAction.next,
+                        focusNode: focusNode2,
+                        onTap: () => focusNode2?.requestFocus(),
+                        maxLines: heightSizedBox ~/ 20,
+                        maxLength: 300,
+                        textInputAction: TextInputAction.newline,
                         keyboardType: TextInputType.name,
                         initialValue: arguments?['description'],
                         style: new TextStyle(color: Colors.black),
@@ -286,7 +309,7 @@ class _FormUpdateMark extends State<FormUpdateMark> {
                           this._description = newDescriptionPlace;
                         },
                         decoration: InputDecoration(
-                          labelText: "Descrição do lugar",
+                          labelText: "Descrição do local",
                           border: OutlineInputBorder(),
                           labelStyle: TextStyle(
                             color: Colors.black,
@@ -299,6 +322,8 @@ class _FormUpdateMark extends State<FormUpdateMark> {
                         height: 20,
                       ),
                       DropdownButton<String>(
+                          focusNode: focusNode3,
+                          onTap: () => focusNode3?.requestFocus(),
                           isExpanded: true,
                           value: _selectedAcessibilityType,
                           style: TextStyle(color: Colors.black),
@@ -334,6 +359,8 @@ class _FormUpdateMark extends State<FormUpdateMark> {
                         height: 20,
                       ),
                       DropdownButton<String>(
+                          focusNode: focusNode4,
+                          onTap: () => focusNode4?.requestFocus(),
                           isExpanded: true,
                           value: _selectedCategory, //selectedCategory.first,
                           style: TextStyle(color: Colors.black),
@@ -366,6 +393,8 @@ class _FormUpdateMark extends State<FormUpdateMark> {
                         height: 20,
                       ),
                       DropdownButton<String>(
+                          focusNode: focusNode5,
+                          onTap: () => focusNode5?.requestFocus(),
                           isExpanded: true,
                           value: _selectedScapeType,
                           style: TextStyle(color: Colors.black),

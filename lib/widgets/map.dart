@@ -92,11 +92,11 @@ class _MapState extends State<Map> {
                 child: Align(
                   alignment: Alignment.bottomRight,
                   child: FloatingActionButton(
-                    onPressed: () => Navigator.pushNamed(
-                        context, appRoutes.createMarker,
-                        arguments: {
-                          'latitude': _pickedPosition!.latitude,
-                          'longitude': _pickedPosition!.longitude,
+                    onPressed: () => Navigator.pop(
+                        context,
+                        {
+                          "latitude": _pickedPosition!.latitude,
+                          "longitude": _pickedPosition!.longitude,
                         }),
                     materialTapTargetSize: MaterialTapTargetSize.padded,
                     backgroundColor: Colors.white,

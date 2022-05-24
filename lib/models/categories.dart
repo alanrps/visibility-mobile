@@ -12,7 +12,7 @@ class Categories {
   int? education;
   int? food;
   int? hospital;
-  int? accomodation;
+  int? accommodation;
   int? finance;
 
   Categories({
@@ -24,7 +24,7 @@ class Categories {
     required this.education,
     required this.food,
     required this.hospital,
-    required this.accomodation,
+    required this.accommodation,
     required this.finance,
     });
 

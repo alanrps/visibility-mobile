@@ -330,13 +330,13 @@ class MapScreenState extends State<ProfilePage>
                                         child: new DateTimePicker(
                                           initialValue: _birthDate,
                                           enabled: !_status,
-                                          // locale: Locale('pt', 'BR'),
                                           // icon: Icon(
                                           //     Icons.calendar_today,
                                           //     color: Colors.black,
                                           //   ),
                                           firstDate: DateTime(1900),
                                           lastDate: DateTime(2100),
+                                          // locale: Locale('pt', 'BR'),
                                           // dateLabelText: 'Data Nascimento',
                                           onSaved: (birthDate) =>
                                               _formData['birthDate'] =

@@ -32,7 +32,7 @@ class _AchievementsState extends State<Achievements> {
     "education": Icon(Icons.school, color: Colors.black,),
     "food": Icon(Icons.food_bank_rounded, color: Colors.black,),
     "hospital": Icon(Icons.medical_services, color: Colors.black,),
-    "accomodation": Icon(Icons.hotel, color: Colors.black,),
+    "accommodation": Icon(Icons.hotel, color: Colors.black,),
     "finance": Icon(Icons.attach_money, color: Colors.black,),
     "points": Icon(Icons.moving_rounded, color: Colors.black,),
     "level": Icon(Icons.arrow_circle_up, color: Colors.black,),
@@ -48,7 +48,7 @@ class _AchievementsState extends State<Achievements> {
     "evaluations": "Avaliações",
     "public_evaluations": "Avaliações públicas",
     "private_evaluations": "Avaliações privadas",
-    "place": "Lugares",
+    "place": "Locais",
     "wheelchair_parking": "Vagas para cadeirantes",
     "travel": "Viagem",
     "transport": "Transporte",
@@ -58,13 +58,13 @@ class _AchievementsState extends State<Achievements> {
     "education": "Educação",
     "food": "Alimentação",
     "hospital": "Hospital",
-    "accomodation": "Hospedagem",
+    "accommodation": "Hospedagem",
     "finance": "Financias",
     "points": "Pontos",
     "level": "Nível",
-    "accessible_place": "Lugar acessível",
-    "not_accessible_place": "Lugar não acessível",
-    "partially_accessible_place": "Lugar parcialmente acessível",
+    "accessible_place": "Local acessível",
+    "not_accessible_place": "Local não acessível",
+    "partially_accessible_place": "Local parcialmente acessível",
     "weekly_points": "Pontos semenais",
     "edit_evaluations": "Avaliações editadas",
     "comments": "Comentários",
@@ -83,7 +83,7 @@ class _AchievementsState extends State<Achievements> {
       ));
 
       final achievements = response.data;
-
+      
       List<Badges> badges = List<Badges>.from(achievements.map((achievement) => Badges.fromJson(achievement)));
 
       return badges;
@@ -115,7 +115,10 @@ class _AchievementsState extends State<Achievements> {
                 radius: 20.0,
                 lineWidth: 5.0,
                 percent: ((badge.amount)! * 100/ badge.actionsAmount!) / 100,
-                header: new Text('${badge.amount.toString()}/${badge.actionsAmount.toString()}'),
+                header: new Text('${badge.amount.toString()}/${badge.actionsAmount.toString()}', style: TextStyle(
+                                // fontWeight: FontWeight.bold,
+                                // color: Colors.black,
+                                fontSize: 13)),
                 backgroundColor: Colors.grey,
                 progressColor: badge.amount != badge.actionsAmount ? Colors.blue : Colors.green,
               ),

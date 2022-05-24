@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 Future main() async {
   // Carrega as váriaveis de ambiente do aquivo .env
   await dotenv.load(fileName: ".env");
+  AppRoutes appRoutes = new AppRoutes();
 
   return runApp(
     MaterialApp(
@@ -15,21 +16,12 @@ Future main() async {
         GlobalWidgetsLocalizations.delegate
       ],
       supportedLocales: [const Locale('pt', 'BR')],
-      home: MyApp(),
+      // home: Login(),
+      title: 'Visibility',
+      debugShowCheckedModeBanner: false,
+      theme: appTheme(),
+      routes: appRoutes.routes(),
+      initialRoute: appRoutes.getLogin,
     ),
   );
-}
-
-class MyApp extends StatelessWidget {
-  AppRoutes appRoutes = new AppRoutes();
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Visibility',
-        debugShowCheckedModeBanner: false,
-        theme: appTheme(),
-        initialRoute: appRoutes.getLogin,
-        routes: appRoutes.routes());
-  }
 }

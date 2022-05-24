@@ -19,8 +19,8 @@ class MapMain extends StatefulWidget {
 class _MapMainState extends State<MapMain> {
   Map<String, String> _filter = new Map<String, String>();
   AppRoutes appRoutes = new AppRoutes();
-  dynamic _accessibilitiesFilter;
-  dynamic _categoriesFilter;
+  dynamic _accessibilitiesFilter = [];
+  dynamic _categoriesFilter = [];
 
   Map<String, String> icons = {
     'EDUCATION': 'assets/EDUCATION.png',
@@ -54,7 +54,7 @@ class _MapMainState extends State<MapMain> {
     "evaluations": "Avaliações",
     "public_evaluations": "Avaliações Públicas",
     "private_evaluations": "Avaliações Privadas",
-    "place": "Lugares",
+    "place": "Locais",
     "wheelchair_parking": "Vagas para Cadeirantes",
     "travel": "Viagem",
     "transport": "Transporte",
@@ -64,7 +64,7 @@ class _MapMainState extends State<MapMain> {
     "education": "Educação",
     "food": "Alimentação",
     "hospital": "Hospital",
-    "accomodation": "Hospedagem",
+    "accommodation": "Hospedagem",
     "finance": "Financias",
   };
 
@@ -246,22 +246,10 @@ class _MapMainState extends State<MapMain> {
       filter.forEach((String key, dynamic value) {
         this._filter[key] = jsonEncode(value);
       });
+
+      this._accessibilitiesFilter = filter["acessibilities"].length > 0 ? filter["acessibilities"] : [];
+      this._categoriesFilter = filter["categories"].length > 0 ? filter["categories"] : [];
     }
-
-    if(filter.containsKey("acessibilities"))
-      this._accessibilitiesFilter = filter["acessibilities"];
-    if(filter.containsKey("categories"))
-      this._categoriesFilter = filter["categories"];
-
-    
-    print("FILTRO ACESSIBILIDADE");
-    print(_accessibilitiesFilter);
-    print("FILTRO CATEGORIA");
-    print(_categoriesFilter);
-
-
-    print("FILTER STRING");
-    print(this._filter);
 
     Response response = await dio.get(url, queryParameters: this._filter);
   
@@ -340,6 +328,9 @@ class _MapMainState extends State<MapMain> {
                       textAlign: TextAlign.left,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
+                    SizedBox(
+                      height: 4,
+                    ),
                     Text(acessibilityTypes[place.classify!]!),
                     SizedBox(
                       height: 20,
@@ -350,6 +341,9 @@ class _MapMainState extends State<MapMain> {
                       "Tipo de Espaço",
                       textAlign: TextAlign.left,
                       style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                     SizedBox(
+                      height: 4,
                     ),
                     Text(spaceTypes[place.spaceType!]!),
                     SizedBox(
@@ -362,6 +356,9 @@ class _MapMainState extends State<MapMain> {
                       textAlign: TextAlign.left,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
+                     SizedBox(
+                      height: 4,
+                    ),
                     Text(mapNames[place.category?.toLowerCase()]!),
                     SizedBox(
                       height: 20,
@@ -369,9 +366,12 @@ class _MapMainState extends State<MapMain> {
                   ],
                   if (place.name != '') ...[
                     Text(
-                      "Nome do lugar",
+                      "Nome do Local",
                       textAlign: TextAlign.left,
                       style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                     SizedBox(
+                      height: 4,
                     ),
                     Text(place.name!),
                     SizedBox(
@@ -383,6 +383,9 @@ class _MapMainState extends State<MapMain> {
                       "Descrição",
                       textAlign: TextAlign.left,
                       style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                     SizedBox(
+                      height: 4,
                     ),
                     Text(place.description!, textAlign: TextAlign.justify)
                   ],
@@ -399,6 +402,8 @@ class _MapMainState extends State<MapMain> {
                     icon: Icon(Icons.create_sharp),
                     alignment: Alignment.center,
                     onPressed: () async {
+                      print(place.markerId);
+
                       final dynamic result = await Navigator.pushNamed(context, appRoutes.getUpdateMarker,
                           arguments: {
                             "markerId": place.markerId,
@@ -409,34 +414,39 @@ class _MapMainState extends State<MapMain> {
                             "description": place.description
                           });
 
+                      print(result);
+                      print('result');
+                      print(place.markerId);
+                      print('ih rapaz');
+
+                      Set<Marker> newMarkers = {};
+                      _markers.forEach((Marker element) async {
+                      
+                          print('DATA');
+                          print(place.markerId);
+                          print(element.markerId.value);
+                        if(int.parse(element.markerId.value) == place.markerId){
+
+                            newMarkers.add(new Marker(
+                              icon: await _loadImage(result['category']),
+                              markerId: element.markerId,
+                              position: element.position,
+                              onTap: () => _getDialogData(int.parse(element.markerId.value)),
+                            ));
+                        }
+                        else{
+                          newMarkers.add(element);
+                        }
+                      });
+
+                      print('new markers');
+                      print(newMarkers);
+
                       setState(() {
                         _openDialog = false;
+                        _markers = newMarkers;
                       });
-                      
-                      // if(place.category != result.category){
-                      //   _markers.map((element) async {
-                      //     if(element.markerId == place.markerId){
-                      //       element.icon = await _loadImage(result['category_id']);
-                      //     }
-                      //   });
-                      // }
 
-                      
-
-
-                      // if(result.isNotEmpty){
-                      //   result.forEach((String key, dynamic value) {
-                      //     this._filter[key] = jsonEncode(value);
-                      //   });
-                      // }
-
-                      // setState(() {
-                      //   place.name = result["name"];
-                      //   place.classify = result["classify"];
-                      //   place.spaceType = result["spaceType"];
-                      //   place.category = result["category"];
-                      //   place.description = result!["description"];
-                      // });
                     }),
                 IconButton(
                     icon: Icon(Icons.check_circle_rounded),
@@ -466,7 +476,10 @@ class _MapMainState extends State<MapMain> {
                           this._inProgress = false;
                         });
 
-                        final result = await Navigator.pushNamed(context, appRoutes.getTeste, arguments: {
+                        print("argumentos");
+                        print(this._accessibilitiesFilter);
+                        print(this._categoriesFilter);
+                        final result = await Navigator.pushNamed(context, appRoutes.getFilter, arguments: {
                           "acessibilities": this._accessibilitiesFilter,
                           "categories": this._categoriesFilter, 
                         });
@@ -493,8 +506,32 @@ class _MapMainState extends State<MapMain> {
                     alignment: Alignment.bottomRight,
                     child: FloatingActionButton(
                       heroTag: 'btn2',
-                      onPressed: () => Navigator.pushNamed(
-                          context, appRoutes.getCreateMarker),
+                      onPressed: () async {
+                        final dynamic result = await Navigator.pushNamed(context, appRoutes.getCreateMarker);
+
+                        print("BORA ADICIONAR A MARCAÇÃO");
+                        print(result["coordinates"]);
+                        
+                        LatLng coordinates = _convertWktInLatLong(result['coordinates']);
+                        print(coordinates);
+
+                          _markers.add(Marker(
+                            icon: await _loadImage(result['markers_type_id'] == 'PLACE'
+                                ? result['category_id']
+                                : result['markers_type_id']),
+                            markerId: MarkerId(result['id'].toString()),
+                            position: coordinates,
+                            onTap: result['markers_type_id'] == 'PLACE'
+                                ? () {
+                                    return _getDialogData(result['id']);
+                                  }
+                                : () => {},
+                          ));
+
+                          setState(() {
+                          _markers = _markers;
+                        });
+                      },
                       materialTapTargetSize: MaterialTapTargetSize.padded,
                       backgroundColor: Colors.white,
                       child: const Icon(

@@ -14,7 +14,7 @@ import '../views/comments.dart';
 import '../views/sign_up.dart';
 import '../views/login.dart';
 import '../widgets/map.dart';
-import '../views/test.dart';
+import '../widgets/chart.dart';
 import '../views/filter.dart';
 
 class AppRoutes {
@@ -31,15 +31,16 @@ class AppRoutes {
   String updatePassword = '/updatePassword';
   String ranking = "/ranking";
   String badges = "/badges";
-  String teste = "/teste";
+  String filter = "/filter";
   String comments = "/comments";
+  String chart = "/chart";
 
   String get getHome => this.home;
   String get getCreateMarker => this.createMarker;
   String get getUpdateMarker => this.updateMarker;
   String get getLogin => this.login;
   String get getMap => this.map;
-  String get getMapmain => this.mapmain;
+  // String get getMapmain => this.mapmain;
   String get getUsers => this.users;
   String get getSignup => this.signup;
   String get getProfile => this.profile;
@@ -47,9 +48,11 @@ class AppRoutes {
   String get getUpdatePassword => this.updatePassword;
   String get getRanking => this.ranking;
   String get getBadges => this.badges;
-  String get getTeste => this.teste;
+  String get getFilter => this.filter;
   String get getComments => this.comments;
+  String get getChart => this.chart; 
 
+  
   routes() {  
     return <String, WidgetBuilder>{
       signup: (context) => Register(),
@@ -65,8 +68,9 @@ class AppRoutes {
       updatePassword: (context) => UpdatePassword(),
       ranking: (context) => Scoreboard(),
       badges: (context) => Achievements(),
-      teste: (context) => MyHomePage(),
+      filter: (context) => Filter(),
       comments: (context) => Comments(),
+      chart: (context) => InformationsChart(),
     };
   }
 }

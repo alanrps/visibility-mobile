@@ -177,6 +177,7 @@ class _RegisterState extends State<Register> {
                 ),
                 TextFormField(
                   textInputAction: TextInputAction.next,
+                  
                   keyboardType: TextInputType.phone,
                   validator: (value) {
                     String patttern = r'(^[0-9]*$)';

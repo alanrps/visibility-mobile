@@ -47,7 +47,10 @@ class _ScoreboardState extends State<Scoreboard> {
             ),
             title: Text(user.name as String),
             trailing: Container(
-                child: Text('Pontuação: ${user.weekly_points}')),
+                child: Text('Pontuação: ${user.weekly_points}', style: TextStyle(
+                                // fontWeight: FontWeight.bold,
+                                // color: Colors.black,
+                                fontSize: 13))),
             onTap: () => {},
           ),
         ),

@@ -1,14 +1,15 @@
 // import 'dart:html';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:app_visibility/routes/routes.dart';
 
-class MyHomePage extends StatefulWidget {
+class Filter extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _FilterState createState() => _FilterState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _FilterState extends State<Filter> {
   AppRoutes appRoutes = new AppRoutes();
 
   Map<String, String> _categories = {
@@ -20,7 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
     "EDUCATION": "Educação",
     "FOOD": "Alimentação",
     "HOSPITAL": "Hospital",
-    "ACCOMODATION": "Hospedagem",
+    "ACCOMMODATION": "Hospedagem",
     "FINANCE": "Financias",
   };
 
@@ -38,6 +39,9 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Object?> _selectedAccessibilities = [];
   List<MultiSelectItem> _itemsAccessibilities = [];
   List<MultiSelectItem> _itemsCategories = [];
+
+  bool hasArgumentsCategories = false;
+  bool hasArgumentsAccessibilities = false;
   
   void mapItems() {
     List<MultiSelectItem> categories = _categories.entries.map((category) => MultiSelectItem(category.key, category.value)).toList();
@@ -61,17 +65,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
     print(arguments);
 
-    if(arguments!["acessibilities"] != null && _selectedAccessibilities.length == 0){
+    if(arguments!["acessibilities"].length > 0 && this.hasArgumentsAccessibilities == false){
       print("ARGUMENTOS ACESSIBILIDADE");
       _accessibilitiesInitialValue = arguments["acessibilities"] as List<Object?>;
       _selectedAccessibilities = arguments["acessibilities"] as List<Object?>;
       _itemsAccessibilities = _selectedAccessibilities.map((acessibility) => MultiSelectItem(acessibility, _accessibilities[acessibility]!)).toList();
+      this.hasArgumentsAccessibilities = true;
     }
-    if(arguments["categories"] != null && _selectedCategories.length == 0){
+    if(arguments["categories"].length > 0 && this.hasArgumentsCategories == false){
       print("ARGUMENTOS CATEGORIAS");
       _categoriesInitialValue = arguments["categories"] as List<Object?>;
       _selectedCategories = arguments["categories"] as List<Object?>;
-      _itemsAccessibilities = _selectedCategories.map((category) => MultiSelectItem(category, _categories[category]!)).toList();
+      _itemsCategories = _selectedCategories.map((category) => MultiSelectItem(category, _categories[category]!)).toList();
+      this.hasArgumentsCategories = true;
     }
 
     return Scaffold(
@@ -107,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       onConfirm: (List<Object?> values) {
                         setState(() {
                           _selectedCategories = values;
-                          _itemsCategories = values.map((category) => MultiSelectItem(category, _categories[category]!)).toList();
+                          // _itemsCategories = values.map((category) => MultiSelectItem(category, _categories[category]!)).toList();
                         });
                         print(values);
                       },
@@ -152,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         // },
                       ),
                     ),
-                    _selectedCategories == null || _selectedCategories.isEmpty
+                    _selectedCategories.isEmpty
                         ? Container(
                             padding: EdgeInsets.all(10),
                             alignment: Alignment.centerLeft,
@@ -189,12 +195,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       onConfirm: (List<Object?> values) {
                         setState(() {
                           _selectedAccessibilities = values;
-                          _itemsAccessibilities = values.map((accessibilities) => MultiSelectItem(accessibilities, _categories[accessibilities]!)).toList();
+                          // _itemsAccessibilities = values.map((accessibilities) => MultiSelectItem(accessibilities, _categories[accessibilities]!)).toList();
                         });
                         print(values);
                       },
                       chipDisplay: MultiSelectChipDisplay(
-                        items: _itemsAccessibilities,
+                        // items: _itemsAccessibilities,
                         textStyle: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
@@ -245,7 +251,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         // },
                       ),
                     ),
-                    _selectedAccessibilities == null || _selectedAccessibilities.isEmpty
+                    _selectedAccessibilities.isEmpty
                         ? Container(
                             padding: EdgeInsets.all(10),
                             alignment: Alignment.centerLeft,
@@ -269,6 +275,10 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                               child: Text("Filtrar Marcadores"),
                               onPressed: (){
+                                print('ACESSIBILIDADE');
+                                print(this._selectedAccessibilities);
+                                print('CATEGORIAS');
+                                print(this._selectedCategories);
                                 Navigator.pop(context, {
                                   "acessibilities": this._selectedAccessibilities,
                                   "categories": this._selectedCategories, 

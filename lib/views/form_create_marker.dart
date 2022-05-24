@@ -36,12 +36,36 @@ class _FormCreateMark extends State<FormCreateMark> {
   final maxLength = 1000;
   String _caractersCount = ''; 
 
+  FocusNode? focusNode1;
+  FocusNode? focusNode2;
+  FocusNode? focusNode3;
+  FocusNode? focusNode4;
+  FocusNode? focusNode5;
+  FocusNode? focusNode6;
+
   @override
   void initState() {
     controller.addListener(() {
       setState(() {});
     });
     super.initState();
+      focusNode1 = FocusNode();
+      focusNode2 = FocusNode();
+      focusNode3 = FocusNode();
+      focusNode4 = FocusNode();
+      focusNode5 = FocusNode();
+      focusNode6 = FocusNode();
+  }
+
+   @override
+  void dispose() {
+    focusNode1?.dispose();
+    focusNode2?.dispose();
+    focusNode3?.dispose();
+    focusNode4?.dispose();
+    focusNode5?.dispose();
+    focusNode6?.dispose();
+    super.dispose();
   }
 
   void showSnackBar(BuildContext context, String text) {
@@ -104,7 +128,7 @@ class _FormCreateMark extends State<FormCreateMark> {
     }
     if (_selectedMarkerType == null) {
       setState(() {
-        _dropDownErrorMarkerType = "Por Favor, Selecione um Local";
+        _dropDownErrorMarkerType = "Por Favor, Selecione um local";
         _isValid = false;
       });
     }
@@ -230,18 +254,23 @@ class _FormCreateMark extends State<FormCreateMark> {
           }
         });
       }
-
+      
+      dynamic createdMarker;
       try {
         String urlCreateMarker = '${Config.baseUrl}/markers';
         String urlUpdateInformationsAmount = '${Config.baseUrl}/users/${userData['id']}/informationAmount';
 
-        await dio.post(urlCreateMarker,
+        Response resultCreatedMarker = await dio.post(urlCreateMarker,
             data: markerData,
             options: Options(
               headers: {
                 'Authorization': 'Bearer ${userData['token']}',
               },
         ));
+
+        createdMarker = resultCreatedMarker.data;
+        print("new marker");
+        print(createdMarker);
 
         final informationAmount = await dio.patch(urlUpdateInformationsAmount, data: <String, dynamic>{ 
           "updatedProperties": Utils.convertListToLowerCase(updatedProperties),
@@ -275,11 +304,13 @@ class _FormCreateMark extends State<FormCreateMark> {
       } catch (e) {
         print(e);
       }
+
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Marcação Adicionada com sucesso!'),
         duration: Duration(seconds: 2),
       ));
-      Navigator.pushNamed(context, '/home');
+      
+      Navigator.pop(context, createdMarker);
     }
   }
 
@@ -291,14 +322,14 @@ class _FormCreateMark extends State<FormCreateMark> {
 
     final int maxLines = 3;
     final int maxLinesForced = 3;
-    final arguments = ModalRoute.of(context)!.settings.arguments as Map?;
 
-    if (arguments != null) {
-      print(arguments['latitude']);
-      print(arguments['longitude']);
+    // final arguments = ModalRoute.of(context)!.settings.arguments as Map?;
+    // if (arguments != null) {
+    //   print(arguments['latitude']);
+    //   print(arguments['longitude']);
 
-      _setPosition(arguments['latitude'], arguments['longitude']);
-    }
+    //   _setPosition(arguments['latitude'], arguments['longitude']);
+    // }
 
     return Scaffold(
       appBar: AppBar(
@@ -322,7 +353,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         TextButton(
-                          style: (arguments != null || marker.latitude != null)
+                          style: (marker.latitude != null)
                               ? TextButton.styleFrom(
                                   primary: Colors.black,
                                   backgroundColor: Colors.grey,
@@ -348,18 +379,22 @@ class _FormCreateMark extends State<FormCreateMark> {
                                 fontSize: 13),
                           ),
                           onPressed:
-                              (arguments != null || marker.latitude != null)
+                              (marker.latitude != null)
                                   ? null
-                                  : () {
-                                      Navigator.of(context)
-                                          .pushNamed(appRoutes.getMap);
+                                  : () async {
+                                      final dynamic result = await Navigator.of(context).pushNamed(appRoutes.getMap);
+
+                                      print(result["latitude"]);
+                                      print(result["longitude"]);
+
+                                      _setPosition(result["latitude"], result["longitude"]);
                                     },
                         ),
                         SizedBox(
                           width: 5,
                         ),
                         TextButton(
-                          style: (arguments != null || marker.latitude != null)
+                          style: (marker.latitude != null)
                               ? TextButton.styleFrom(
                                   primary: Colors.black,
                                   backgroundColor: Colors.grey,
@@ -384,8 +419,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                                 color: Colors.black,
                                 fontSize: 13),
                           ),
-                          onPressed: (arguments != null ||
-                                  marker.latitude != null)
+                          onPressed: (marker.latitude != null)
                               ? null
                               : () async {
                                   setState(() {
@@ -417,8 +451,9 @@ class _FormCreateMark extends State<FormCreateMark> {
                     SizedBox(
                       height: 20,
                     ),
-                    if (arguments != null || marker.latitude != null) ...[
+                    if (marker.latitude != null) ...[
                       DropdownButton<String>(
+                          focusNode: focusNode1,
                           isExpanded: true,
                           value: _selectedMarkerType,
                           style: TextStyle(color: Colors.black),
@@ -426,6 +461,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                             height: 2,
                             color: Colors.yellow,
                           ),
+                          onTap: () => focusNode1?.requestFocus(),
                           onChanged: (String? selectedMarkerType) {
                             setState(() {
                               _selectedMarkerType = selectedMarkerType;
@@ -453,6 +489,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                           height: 20,
                         ),
                         TextFormField(
+                          focusNode: focusNode2,
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.name,
                           style:
@@ -463,11 +500,12 @@ class _FormCreateMark extends State<FormCreateMark> {
                             }
                             return null;
                           },
+                          onTap: () => focusNode2?.requestFocus(),
                           onSaved: (String? newName) =>
                               setState(() => marker.name = newName),
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
-                            labelText: "Nome do Lugar",
+                            labelText: "Nome do local",
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.w400,
@@ -481,6 +519,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                         Column(
                           children: [
                            TextFormField(
+                            focusNode: focusNode3,
                             maxLength: 300,
                             maxLines: heightSizedBox ~/ 20,
                             textInputAction: TextInputAction.newline,
@@ -500,8 +539,9 @@ class _FormCreateMark extends State<FormCreateMark> {
                                 _caractersCount = value;
                               });
                             },
+                            onTap: () => focusNode3?.requestFocus(),
                             decoration: InputDecoration(
-                              labelText: "Descrição do lugar",
+                              labelText: "Descrição do local",
                               border: OutlineInputBorder(),
                               counterText: 'Quantidade caracteres: ${_caractersCount.length}',
                               counterStyle: new TextStyle(color: Colors.black, fontSize: 12),
@@ -518,6 +558,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                           height: 20,
                         ),
                         DropdownButton<String>(
+                            focusNode: focusNode4,
                             isExpanded: true,
                             value: _selectedAcessibilityType,
                             style: TextStyle(color: Colors.black),
@@ -525,6 +566,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                               height: 2,
                               color: Colors.yellow[700],
                             ),
+                            onTap: () => focusNode4?.requestFocus(),
                             onChanged: (String? selectedAcessibleType) {
                               setState(() {
                                 _selectedAcessibilityType =
@@ -553,6 +595,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                           height: 20,
                         ),
                         DropdownButton<String>(
+                            focusNode: focusNode5,
                             isExpanded: true,
                             value: _selectedCategory, //selectedCategory.first,
                             style: TextStyle(color: Colors.black),
@@ -560,6 +603,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                               height: 2,
                               color: Colors.yellow[700],
                             ),
+                            onTap: () => focusNode5?.requestFocus(),
                             onChanged: (String? selectedCategory) {
                               print(selectedCategory);
 
@@ -588,6 +632,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                           height: 20,
                         ),
                         DropdownButton<String>(
+                            focusNode: focusNode6,
                             isExpanded: true,
                             value: _selectedScapeType,
                             style: TextStyle(color: Colors.black),
@@ -595,6 +640,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                               height: 2,
                               color: Colors.yellow[700],
                             ),
+                            onTap: () => focusNode6?.requestFocus(),
                             onChanged: (String? selectedSpaceType) {
                               print(selectedSpaceType);
 
