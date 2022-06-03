@@ -77,7 +77,7 @@ class _FormUpdateMark extends State<FormUpdateMark> {
     'Lazer': 'LEISURE',
     'Educação': 'EDUCATION',
     'Alimentação': 'FOOD',
-    'Hospitais': 'HOSPITALS',
+    'Hospital': 'HOSPITAL',
     'Hospedagem': 'ACCOMMODATION',
   };
   Map<String, String> categoriesEnglish = {
@@ -88,7 +88,7 @@ class _FormUpdateMark extends State<FormUpdateMark> {
     'LEISURE': 'Lazer',
     'EDUCATION': 'Educação',
     'FOOD': 'Alimentação',
-    'HOSPITALS': 'Hospitais',
+    'HOSPITAL': 'Hospital',
     'ACCOMMODATION': 'Hospedagem',
   };
 
@@ -440,8 +440,8 @@ class _FormUpdateMark extends State<FormUpdateMark> {
             icon: Icon(Icons.create_sharp),
             label: Text('Atualizar'),
             style: TextButton.styleFrom(
-              primary: Colors.black,
-              backgroundColor: Colors.yellow[700],
+              primary: Colors.white,
+              backgroundColor: Colors.green,
               elevation: 0,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),

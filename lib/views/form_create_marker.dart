@@ -91,7 +91,7 @@ class _FormCreateMark extends State<FormCreateMark> {
 
   String? _selectedMarkerType;
   Map<String, String> markerTypes = {
-    'Lugar': 'PLACE',
+    'Local': 'PLACE',
     'Vaga de cadeirante': 'WHEELCHAIR_PARKING'
   };
 
@@ -107,7 +107,7 @@ class _FormCreateMark extends State<FormCreateMark> {
     'Lazer': 'LEISURE',
     'Educação': 'EDUCATION',
     'Alimentação': 'FOOD',
-    'Hospitais': 'HOSPITALS',
+    'Hospital': 'HOSPITAL',
     'Hospedagem': 'ACCOMMODATION',
   };
 
@@ -207,7 +207,7 @@ class _FormCreateMark extends State<FormCreateMark> {
         marker.category = categories[_selectedCategory!];
         marker.spaceType = spaceTypes[_selectedScapeType!];
         marker.classify = accessibilityTypes[_selectedAcessibilityType!];
-        updatedProperties.addAll([marker.typeMarker!, marker.category!, 'wheelchair_parking']);
+        updatedProperties.addAll([marker.typeMarker!, marker.category!]);
       }
 
       Map<String, String> userData = await storage.readAll();
@@ -468,7 +468,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                             });
                           },
                           hint: Text(
-                            "Tipo de local",
+                            "Tipo de marcação",
                             style: TextStyle(color: Colors.black),
                           ),
                           items:
@@ -484,7 +484,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                               _dropDownErrorMarkerType ?? "",
                               style: TextStyle(color: Colors.red),
                             ),
-                      if (_selectedMarkerType == 'Lugar') ...[
+                      if (_selectedMarkerType == 'Local') ...[
                         SizedBox(
                           height: 20,
                         ),

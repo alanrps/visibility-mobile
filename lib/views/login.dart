@@ -211,6 +211,10 @@ class _LoginState extends State<Login> {
                       //   borderRadius: BorderRadius.all(Radius.circular(5))
                       // ),
                       child: TextButton(
+                        style: TextButton.styleFrom(
+                          // primary: Colors.blue,
+                          enableFeedback: true
+                        ),
                         child: Text(
                           'Cadastre-se',
                           style: TextStyle(

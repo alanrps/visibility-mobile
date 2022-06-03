@@ -24,7 +24,7 @@ class _MapMainState extends State<MapMain> {
 
   Map<String, String> icons = {
     'EDUCATION': 'assets/EDUCATION.png',
-    'HOSPITALS': 'assets/HOSPITALS.png',
+    'HOSPITAL': 'assets/HOSPITALS.png',
     'FOOD': 'assets/FOOD.png',
     'SUPERMARKET': 'assets/SUPERMARKET.png',
     'TRAVEL': 'assets/TRAVEL.png',
@@ -395,9 +395,15 @@ class _MapMainState extends State<MapMain> {
                 IconButton(
                     icon: Icon(Icons.chat),
                     alignment: Alignment.centerLeft,
-                    onPressed: () => Navigator.pushNamed(
+                    onPressed: (){
+                      Navigator.pushNamed(
                         context, appRoutes.comments,
-                        arguments: { "markerId": place.markerId })),
+                        arguments: { "markerId": place.markerId });
+
+                        setState(() {
+                          _openDialog = false;
+                        });
+                    }),
                 IconButton(
                     icon: Icon(Icons.create_sharp),
                     alignment: Alignment.center,
@@ -414,39 +420,41 @@ class _MapMainState extends State<MapMain> {
                             "description": place.description
                           });
 
-                      print(result);
-                      print('result');
-                      print(place.markerId);
-                      print('ih rapaz');
+                        print("RESULTADO");
+                        print(result);
 
-                      Set<Marker> newMarkers = {};
-                      _markers.forEach((Marker element) async {
-                      
-                          print('DATA');
-                          print(place.markerId);
-                          print(element.markerId.value);
-                        if(int.parse(element.markerId.value) == place.markerId){
+                        if(result != null){
+                          Set<Marker> newMarkers = {};
+                        _markers.forEach((Marker element) async {
+                            print('DATA');
+                            print(place.markerId);
+                            print(element.markerId.value);
+                          if(int.parse(element.markerId.value) == place.markerId){
 
-                            newMarkers.add(new Marker(
-                              icon: await _loadImage(result['category']),
-                              markerId: element.markerId,
-                              position: element.position,
-                              onTap: () => _getDialogData(int.parse(element.markerId.value)),
-                            ));
+                              newMarkers.add(new Marker(
+                                icon: await _loadImage(result['category']),
+                                markerId: element.markerId,
+                                position: element.position,
+                                onTap: () => _getDialogData(int.parse(element.markerId.value)),
+                              ));
+                          }
+                          else{
+                            newMarkers.add(element);
+                          }
+                        });
+
+                        print('new markers');
+                        print(newMarkers);
+
+                        setState(() {
+                          _openDialog = false;
+                          _markers = newMarkers;
+                        });
                         }
-                        else{
-                          newMarkers.add(element);
-                        }
-                      });
 
-                      print('new markers');
-                      print(newMarkers);
-
-                      setState(() {
-                        _openDialog = false;
-                        _markers = newMarkers;
-                      });
-
+                        setState(() {
+                          _openDialog = false;
+                        });
                     }),
                 IconButton(
                     icon: Icon(Icons.check_circle_rounded),

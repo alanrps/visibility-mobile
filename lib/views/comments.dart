@@ -127,6 +127,7 @@ class _CommentsState extends State<Comments> {
                 labelText: 'Escreva um comentário...',  
                 errorText: 'Comment cannot be blank', 
                 withBorder: false,
+                
                 sendButtonMethod: () async {
                   if (formKey.currentState!.validate()) {
                     print(commentController.text);
@@ -187,7 +188,7 @@ class _CommentsState extends State<Comments> {
                 },
                 formKey: formKey,
                 commentController: commentController,
-                backgroundColor: Colors.yellow[700],
+                backgroundColor: Colors.green,
                 textColor: Colors.white,
                 sendWidget:
                     Icon(Icons.send_sharp, size: 30, color: Colors.white),

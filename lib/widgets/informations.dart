@@ -258,7 +258,6 @@ class _InformationsState extends State<Informations> {
                   ),
                   barRadius: Radius.circular(10),
                   alignment: MainAxisAlignment.center,
-                  width: 380,
                   lineHeight: 20.0,
                   percent: (_points! * 100 / _nextLevelPoints!) / 100,
                   progressColor: Colors.green),
