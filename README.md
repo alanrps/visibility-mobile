@@ -7,8 +7,8 @@ Desenvolver uma aplicação que possibilite a troca de informações entre usuá
 
 ## Back-end/documentação
 
-[Back-end](https://github.com/alanrps/visibility_api)
-[Documentação](https://github.com/alanrps/visibility_documentation)
+- [Back-end](https://github.com/alanrps/visibility_api)
+- [Documentação](https://github.com/alanrps/visibility_documentation)
 
 ## Público Alvo
 
