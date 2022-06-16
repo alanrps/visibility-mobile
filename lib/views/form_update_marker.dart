@@ -209,7 +209,7 @@ class _FormUpdateMark extends State<FormUpdateMark> {
         print(e);
       }
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Marcação Atualizada com sucesso!'),
+        content: Text('Marcação Atualizada com sucesso! (+10 pontos)'),
         duration: Duration(seconds: 2),
       ));
       Navigator.pop(context, {
@@ -242,7 +242,7 @@ class _FormUpdateMark extends State<FormUpdateMark> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Atualização de Localização'),
+        title: Text('Atualização de avaliação'),
         backgroundColor: Colors.yellow[700],
       ),
       body: Column(

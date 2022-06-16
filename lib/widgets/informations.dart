@@ -7,7 +7,7 @@ import 'package:app_visibility/models/accessibility.dart';
 import 'package:app_visibility/models/place_types.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:app_visibility/models/marker_types.dart';
-import 'package:app_visibility/models/evaluations.dart';
+import 'package:app_visibility/models/marking.dart';
 import 'package:app_visibility/widgets/pieChart.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -23,7 +23,7 @@ class Informations extends StatefulWidget {
 class _InformationsState extends State<Informations> {
   FlutterSecureStorage storage = new FlutterSecureStorage();
   AppRoutes appRoutes = new AppRoutes();
-  Evaluations? _informations;
+  Marking? _informations;
   Categories? _categories;
   Accessibility? _accessibility;
   PlaceTypes? _placeTypes;
@@ -46,10 +46,10 @@ class _InformationsState extends State<Informations> {
     "accessiblePlace": "Acessível",
     "notAccessiblePlace": "Não Acessível",
     "partiallyAccessiblePlace": "Parcialmente acessível",
-    "evaluations": "Avaliações",
+    "marking": "Marcações",
     "publicEvaluations": "Locais Públicos",
     "privateEvaluations": "Locais Privados",
-    "place": "Locais",
+    "place": "Avaliações de locais",
     "wheelchairParking": "Vagas para Cadeirantes",
     "travel": "Viagem",
     "transport": "Transporte",
@@ -90,10 +90,10 @@ class _InformationsState extends State<Informations> {
     this._level = response.data['level'];
     this._points = response.data['points'];
     this._weeklyPoints = response.data['weeklyPoints'];
-    this._evaluations = response.data['evaluations'];
+    this._evaluations = response.data['marking'];
     this._description = response.data['description'];
 
-    Evaluations informationsAmount = Evaluations.fromJson(response.data);
+    Marking informationsAmount = Marking.fromJson(response.data);
 
     Categories categories = Categories.fromJson(response.data);
 
@@ -101,7 +101,7 @@ class _InformationsState extends State<Informations> {
 
     PlaceTypes placetypes = PlaceTypes.fromJson(response.data);
 
-    MarkerTypes evaluations = MarkerTypes.fromJson(response.data);
+    MarkerTypes marking = MarkerTypes.fromJson(response.data);
 
     _fatherItems = [
       {
@@ -110,8 +110,8 @@ class _InformationsState extends State<Informations> {
         'isExpanded': false,
         'childItems': [
           {
-            'title': 'Tipos de Marcações', // Incluir Total
-            'chartData': evaluations, //this._evaluationTypes,
+            'title': 'Marcações', // Incluir Total
+            'chartData': marking, //this._evaluationTypes,
             'statusData': _getListingStatus,
           }
         ]
@@ -122,13 +122,13 @@ class _InformationsState extends State<Informations> {
         'isExpanded': false,
         'childItems': [
           {
-            'title': 'Tipos de Espaços', // Locais
-            'chartData': placetypes, // this._placeTypes,
+            'title': 'Nível de Acessibilidade', // Locais
+            'chartData': acessibilidadeLocais, //this._accessibility,
             'statusData': _getListingStatus,
           },
           {
-            'title': 'Nível de Acessibilidade', // Locais
-            'chartData': acessibilidadeLocais, //this._accessibility,
+            'title': 'Tipos de Espaços', // Locais
+            'chartData': placetypes, // this._placeTypes,
             'statusData': _getListingStatus,
           },
           {
@@ -144,7 +144,7 @@ class _InformationsState extends State<Informations> {
       _informations = informationsAmount;
       _categories = categories;
       _accessibility = acessibilidadeLocais;
-      _evaluationTypes = evaluations;
+      _evaluationTypes = marking;
       _placeTypes = placetypes;
     });
   }
@@ -359,20 +359,24 @@ class _InformationsState extends State<Informations> {
                                                 builder:
                                                     (BuildContext context) {
                                                   return AlertDialog(
+                                                    contentPadding: EdgeInsets.all(0),
+                                                    insetPadding: EdgeInsets.zero,
                                                     actionsAlignment: MainAxisAlignment.center,
                                                     title: Text(
                                                         childItem['title']),
                                                     content: Container(
-                                                      width: 600,
-                                                      height: 350,
-                                                      child: hasValues ? Chart().generateChart(chart) : Column(
-                                                        mainAxisSize: MainAxisSize.max,
-                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                        children: [
-                                                        Text('Ainda não há dados para exibir.')
-                                                      ],),
-                                                    ),
+                                                    // width: double.infinity,
+                                                    // height: 350,
+                                                      width: 800,
+                                                      // height: 350,
+                                                    child: hasValues ? Chart().generateChart(chart) : Column(
+                                                      mainAxisSize: MainAxisSize.max,
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                      children: [
+                                                      Text('Ainda não há dados para exibir.')
+                                                    ],),
+                                                      ),
                                                     actions: [
                                                       IconButton(
                                                         icon: Icon(Icons.check_circle_rounded),

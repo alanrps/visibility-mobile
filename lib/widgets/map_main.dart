@@ -51,10 +51,10 @@ class _MapMainState extends State<MapMain> {
   Map<String, String> spaceTypes = {'PRIVATE': 'Privado', 'PUBLIC': 'Público'};
 
   Map<String, String> mapNames = {
-    "evaluations": "Avaliações",
+    "marking": "Marcações",
     "public_evaluations": "Avaliações Públicas",
     "private_evaluations": "Avaliações Privadas",
-    "place": "Locais",
+    "place": "Avaliações de locais",
     "wheelchair_parking": "Vagas para Cadeirantes",
     "travel": "Viagem",
     "transport": "Transporte",

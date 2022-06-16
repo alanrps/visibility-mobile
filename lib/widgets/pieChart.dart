@@ -4,12 +4,17 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 class Chart {
   Widget generateChart(chartData) {
     return SfCircularChart(
-        legend: Legend(isVisible: true, orientation: LegendItemOrientation.horizontal, position: LegendPosition.top, alignment: ChartAlignment.center, offset: Offset(0, 0), ),
+        enableMultiSelection: true,
+        // borderWidth: 10,
+        legend: Legend(isVisible: true, orientation: LegendItemOrientation.horizontal, position: LegendPosition.top, alignment: ChartAlignment.center, offset: Offset(0, 0), isResponsive: true),
         series: <CircularSeries>[
           PieSeries<ChartData, String>(
+              explode: true,
               dataLabelSettings: DataLabelSettings(
+                showZeroValue: false,
                 labelPosition: ChartDataLabelPosition.outside,
                 useSeriesColor: true,
+                labelAlignment: ChartDataLabelAlignment.outer,
                   isVisible: true),
               dataSource: chartData,
               pointColorMapper: (ChartData data, _) => data.color,

@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:app_visibility/shared/config.dart';
 import 'package:app_visibility/models/ranking.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Scoreboard extends StatefulWidget {
@@ -13,17 +14,37 @@ class _ScoreboardState extends State<Scoreboard> {
   Dio dio = new Dio();
   List<Widget> _scoreboard = [];
   FlutterSecureStorage storage = new FlutterSecureStorage();
+  final ScrollController _scrollController = ScrollController();
+  bool _loading = false;
+  int _lastindex = 1;
+  int _page = 1;
 
   @override
   void initState() {
     super.initState();
-    _getUsersScoreboard()
+    _getUsersScoreboard(update:true)
       .then((usersScoreboard) => _getListData(usersScoreboard));
+    _scrollController.addListener(() { 
+       if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent){
+      _getUsersScoreboard()
+        .then((usersScoreboard) => _getListData(usersScoreboard));
+    }
+    });
   }
 
-  _getListData(List<Ranking> usersScoreboard){
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+  }
+
+  _getListData(List<Ranking> usersScoreboard, {bool restart = false}){
     List<Widget> widgets = [];
-    int index = 1;
+    
+    if(restart){
+      _lastindex = 1;
+      _page = 1;
+    }
 
     for (final user in usersScoreboard) {
       widgets.add(
@@ -34,11 +55,11 @@ class _ScoreboardState extends State<Scoreboard> {
               height: 40,
               alignment: Alignment.center,
               child: Text(
-                '${index.toString()}',
+                '${_lastindex.toString()}',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
-                    fontSize: 30),
+                    fontSize: 16),
               ),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -55,19 +76,30 @@ class _ScoreboardState extends State<Scoreboard> {
           ),
         ),
       );
-      index += 1;
+      _lastindex += 1;
     }
 
+    if(restart)
+      _scoreboard = widgets;
+    else
+      _scoreboard.addAll(widgets);
+    
     setState(() {
-        _scoreboard = widgets;
+        _scoreboard = _scoreboard;
+        _loading = false; 
+        _page = _page += 1;
     });
   }
 
-  _getUsersScoreboard() async {
+  _getUsersScoreboard({bool update = false}) async {
     Map<String, String> userData = await storage.readAll();
 
+    if(update != true){
+      setState(() => _loading = true);
+    }
+
     try {
-      final String url = '${Config.baseUrl}/ranking';
+      final String url = '${Config.baseUrl}/ranking?page=${update ? 1 : this._page}';
       final response = await dio.get(url,
           options: Options(
             headers: {
@@ -75,8 +107,10 @@ class _ScoreboardState extends State<Scoreboard> {
             },
           ));
 
-      final achievements = response.data;
+      final achievementsAndPagination = response.data;
+      final achievements = achievementsAndPagination['data'];
 
+      print('conquistas');
       print(achievements);
 
       List<Ranking> usersInformations = List<Ranking>.from(achievements.map((achievement) => Ranking.fromJson(achievement)));
@@ -89,6 +123,8 @@ class _ScoreboardState extends State<Scoreboard> {
 
   @override
   Widget build(BuildContext context) {
+    double deviceWidth = MediaQuery.of(context).size.width;
+
     return Container(
       color: Colors.grey[100],
       child: Center(
@@ -99,33 +135,54 @@ class _ScoreboardState extends State<Scoreboard> {
             strokeWidth: 3,
             triggerMode: RefreshIndicatorTriggerMode.onEdge,
             onRefresh: () async {
-               List<Ranking> usersScoreboard = await _getUsersScoreboard();
-              await _getListData(usersScoreboard);
+               List<Ranking> usersScoreboard = await _getUsersScoreboard(update: true);
+              await _getListData(usersScoreboard, restart: true );
             },
-            child: ListView(
-                  scrollDirection: Axis.vertical,
-                  children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Text(
-                'Ranking Semanal',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+            child: Stack(
+              children: [
+                ListView(
+                    controller: _scrollController,
+                    scrollDirection: Axis.vertical,
+                    children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Text(
+                  'Ranking Semanal',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                ),
               ),
-            ),
-            if (this._scoreboard.isEmpty)
-              Container(
-                child: Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.black,
-                    value: null,
+              if (this._scoreboard.isEmpty)
+                Container(
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.black,
+                      value: null,
+                    ),
                   ),
-                ),
-              )
-            else
-              ...this._scoreboard
-                  ],
-                ),
+                )
+              else
+                ...this._scoreboard
+                    ],
+                  ),
+                  if(this._loading)
+                    ...[
+                      Positioned(
+                      left: 0,
+                      bottom: 0,
+                      child: Container(
+                        width: deviceWidth,
+                        alignment: Alignment.center,
+                        height: 80,
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        )
+                    )
+                  )
+                    ]
+              ]
+              
+            ),
           )),
     );
   }

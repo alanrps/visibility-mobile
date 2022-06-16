@@ -19,7 +19,7 @@ class _AchievementsState extends State<Achievements> {
   FlutterSecureStorage storage = new FlutterSecureStorage();
 
   Map<String, Widget> iconsCategories = {
-    "evaluations": Icon(Icons.add_location_alt, color: Colors.black,),
+    "marking": Icon(Icons.add_location_alt, color: Colors.black,),
     "public_evaluations": Icon(Icons.fmd_good_outlined, color: Colors.black,),
     "private_evaluations": Icon(Icons.fmd_good_rounded, color: Colors.black,),
     "place": Icon(Icons.place, color: Colors.black,),
@@ -45,10 +45,10 @@ class _AchievementsState extends State<Achievements> {
   };
 
   Map<String, String> mapNames = {
-    "evaluations": "Avaliações",
+    "marking": "Marcações",
     "public_evaluations": "Avaliações públicas",
     "private_evaluations": "Avaliações privadas",
-    "place": "Locais",
+    "place": "Avaliações de locais",
     "wheelchair_parking": "Vagas para cadeirantes",
     "travel": "Viagem",
     "transport": "Transporte",
@@ -66,7 +66,7 @@ class _AchievementsState extends State<Achievements> {
     "not_accessible_place": "Local não acessível",
     "partially_accessible_place": "Local parcialmente acessível",
     "weekly_points": "Pontos semenais",
-    "edit_evaluations": "Avaliações editadas",
+    "edit_evaluations": "Edição de avaliações",
     "comments": "Comentários",
   };
 
@@ -99,6 +99,9 @@ class _AchievementsState extends State<Achievements> {
       print(badge.category);
       print(mapNames[badge.category]!);
 
+      print(badge.amount);
+      print(badge.actionsAmount);
+      
       widgets.add(
         Card(
           child: ListTile(
@@ -112,13 +115,13 @@ class _AchievementsState extends State<Achievements> {
             trailing: Padding(
               padding: EdgeInsets.only(right: 15, left: 5),
               child: new CircularPercentIndicator(
-                radius: 20.0,
+                radius: 23.0,
                 lineWidth: 5.0,
-                percent: ((badge.amount)! * 100/ badge.actionsAmount!) / 100,
-                header: new Text('${badge.amount.toString()}/${badge.actionsAmount.toString()}', style: TextStyle(
-                                // fontWeight: FontWeight.bold,
+                center:  Text('${(((badge.amount)! * 100/ badge.actionsAmount!)).toInt()}%', style: TextStyle(
+                                fontWeight: FontWeight.bold,
                                 // color: Colors.black,
-                                fontSize: 13)),
+                                fontSize: 12)),
+                percent: ((badge.amount)! * 100/ badge.actionsAmount!) / 100,
                 backgroundColor: Colors.grey,
                 progressColor: badge.amount != badge.actionsAmount ? Colors.blue : Colors.green,
               ),

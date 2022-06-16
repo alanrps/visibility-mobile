@@ -149,6 +149,8 @@ class _CommentsState extends State<Comments> {
 
                     Map<String, dynamic> userData = await storage.readAll();
                     String urlUpdateInformationsAmount = '${Config.baseUrl}/users/${userData['id']}/informationAmount';
+                    
+                    print(urlUpdateInformationsAmount);
 
                     final informationAmount = await dio.patch(urlUpdateInformationsAmount, data: <String, dynamic>{ 
                         "updatedProperties": ['comments'],
@@ -160,7 +162,13 @@ class _CommentsState extends State<Comments> {
                             },
                       ));
 
-                     print(informationAmount.data[1]);
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('Comentário adicionado com sucesso! (+5 pontos)' ), 
+                    duration: Duration(seconds: 2),
+                    ));
+
+                    commentController.clear();
+                    FocusScope.of(context).unfocus();
 
                     final achievements = informationAmount.data[1] as List<dynamic>;
                     print(achievements);
@@ -179,9 +187,6 @@ class _CommentsState extends State<Comments> {
                         counter += 1;
                       }
                     }
-
-                    commentController.clear();
-                    FocusScope.of(context).unfocus();
                   } else {
                     print("Not validated");
                   }

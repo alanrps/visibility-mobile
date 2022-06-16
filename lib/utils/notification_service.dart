@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
@@ -12,8 +13,8 @@ class NotificationService {
   //  
 
   initState() async {
-    var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
-    var initializationSettingsIOs = IOSInitializationSettings();
+    final initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+    final initializationSettingsIOs = IOSInitializationSettings();
 
     var initSetttings = InitializationSettings(
       android: initializationSettingsAndroid, 
@@ -27,6 +28,7 @@ class NotificationService {
     var android = AndroidNotificationDetails(
         'id', 
         'channel ',
+        color: Color(1),
         channelDescription: 'description',
         priority: priority ? Priority.max : Priority.high, 
         importance: priority ? Importance.max : Importance.low

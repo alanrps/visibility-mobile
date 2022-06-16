@@ -28,6 +28,8 @@ class _FormCreateMark extends State<FormCreateMark> {
   FlutterSecureStorage storage = new FlutterSecureStorage();
   bool _inProgress = false;
   bool _isValid = true;
+  int ? pontos;
+  String ? message;
   String? _dropDownErrorMarkerType;
   String? _dropDownErrorAcessibilityType;
   String? _dropDownErrorCategory;
@@ -91,7 +93,7 @@ class _FormCreateMark extends State<FormCreateMark> {
 
   String? _selectedMarkerType;
   Map<String, String> markerTypes = {
-    'Local': 'PLACE',
+    'Avaliação de local': 'PLACE',
     'Vaga de cadeirante': 'WHEELCHAIR_PARKING'
   };
 
@@ -197,7 +199,7 @@ class _FormCreateMark extends State<FormCreateMark> {
     }
 
     if (_isValid && _formKey.currentState!.validate()) {
-      updatedProperties.add('evaluations');
+      updatedProperties.add('marking');
       
       marker.typeMarker = markerTypes[_selectedMarkerType!];
 
@@ -272,9 +274,29 @@ class _FormCreateMark extends State<FormCreateMark> {
         print("new marker");
         print(createdMarker);
 
+        String action = "";
+        if(marker.typeMarker == "PLACE"){
+          if(_caractersCount.length >= 200){
+            action = "EP200";
+            this.pontos = 25;
+            this.message = "Avaliação com mais de 200 caracteres adicionada com sucesso!";
+          }
+          else{
+            action = "EP";
+            this.pontos = 15;
+            this.message = "Avaliação adicionada com sucesso!";
+          }
+
+        }
+        else if(marker.typeMarker == "WHEELCHAIR_PARKING"){
+          action = "EWP";
+          this.pontos = 10;
+          this.message = "Vaga de cadeirante adicionada com sucesso!";
+        }
+
         final informationAmount = await dio.patch(urlUpdateInformationsAmount, data: <String, dynamic>{ 
           "updatedProperties": Utils.convertListToLowerCase(updatedProperties),
-          "currentAction": _caractersCount.length >= 200 ? "EP200" : "EP"
+          "currentAction": action,
           },
             options: Options(
               headers: {
@@ -304,9 +326,9 @@ class _FormCreateMark extends State<FormCreateMark> {
       } catch (e) {
         print(e);
       }
-
+      // Marcação Adicionada com sucesso!
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Marcação Adicionada com sucesso!'),
+        content: Text('${this.message} (+${this.pontos} pontos)'), 
         duration: Duration(seconds: 2),
       ));
       
@@ -333,7 +355,7 @@ class _FormCreateMark extends State<FormCreateMark> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cadastro de Localização'),
+        title: Text('Cadastro de Marcação'),
         backgroundColor: Colors.yellow[700],
       ),
       body: Column(
@@ -484,7 +506,7 @@ class _FormCreateMark extends State<FormCreateMark> {
                               _dropDownErrorMarkerType ?? "",
                               style: TextStyle(color: Colors.red),
                             ),
-                      if (_selectedMarkerType == 'Local') ...[
+                      if (_selectedMarkerType == 'Avaliação de local') ...[
                         SizedBox(
                           height: 20,
                         ),
