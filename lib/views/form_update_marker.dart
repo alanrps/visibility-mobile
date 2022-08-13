@@ -1,12 +1,9 @@
-import 'dart:async';
 import 'package:app_visibility/shared/config.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:app_visibility/models/marker.dart';
-import 'package:app_visibility/utils/utils.dart';
 import 'package:app_visibility/routes/routes.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:app_visibility/utils/notification_service.dart';
 
 class FormUpdateMark extends StatefulWidget {
   @override
@@ -18,13 +15,9 @@ class _FormUpdateMark extends State<FormUpdateMark> {
   Dio dio = new Dio();
   Marker marker = new Marker();
   FlutterSecureStorage storage = new FlutterSecureStorage();
-  String? _classify;
-  String? _category;
-  String? _spaceType;
   String? _name;
   String? _description;
   int? _markerId;
-  bool _inProgress = false;
   bool _isValid = true;
   String? _dropDownErrorAcessibilityType;
   String? _dropDownErrorCategory;
@@ -164,7 +157,6 @@ class _FormUpdateMark extends State<FormUpdateMark> {
 
       try {
         final String urlUpdateMarker = '${Config.baseUrl}/markers/${this._markerId}';
-        String urlUpdateInformationsAmount = '${Config.baseUrl}/users/${userData['id']}/informationAmount';
 
         Response resultUpdateMarker = await dio.patch(urlUpdateMarker,
             data: markerData,
@@ -175,36 +167,6 @@ class _FormUpdateMark extends State<FormUpdateMark> {
             ));
 
         print(resultUpdateMarker.data);
-        
-         final informationAmount = await dio.patch(urlUpdateInformationsAmount, data: <String, dynamic>{ 
-          "updatedProperties": ['edit_evaluations'],
-          "currentAction": "EE"
-          },
-            options: Options(
-              headers: {
-                'Authorization': 'Bearer ${userData['token']}',
-              },
-        ));
-
-        print(informationAmount.data[1]);
-
-        final achievements = informationAmount.data[1] as List<dynamic>;
-        print(achievements);
-
-        NotificationService n =  NotificationService();
-        int counter = 0;                  
-        await n.initState();
-
-        if(informationAmount.data[0]['updatedLevel'] == true){
-          await n.showNotification(counter, 'Avançou de nível!', 'Parabéns! você atingiu o nível ${informationAmount.data[0]['level']}', 'O pai é brabo mesmo', true);
-          counter += 1;
-        }
-        if(achievements.length >= 1){
-          for(Map<String, dynamic> achievement in achievements){
-            await n.showNotification(counter, 'Adquiriu uma conquista!', achievement['description'], 'O pai é brabo mesmo', false);
-            counter += 1;
-          }
-        }
       } catch (e) {
         print(e);
       }
@@ -228,7 +190,6 @@ class _FormUpdateMark extends State<FormUpdateMark> {
 
     if (arguments != null && _selectedAcessibilityType == null && _selectedCategory == null && _selectedScapeType == null && _name == null && _description == null) {
       _markerId = arguments["markerId"];
-      print("MARKER ID DO PAI");
       print(_markerId);
 
       setState(() {

@@ -4,17 +4,14 @@ import 'package:app_visibility/views/home.dart';
 import 'package:app_visibility/views/profile.dart';
 import 'package:app_visibility/views/recovery_password.dart';
 import 'package:app_visibility/views/update_password.dart';
-import 'package:app_visibility/widgets/scoreboard.dart';
 import 'package:app_visibility/widgets/map_main.dart';
 import 'package:app_visibility/widgets/users.dart';
-import 'package:app_visibility/widgets/badges.dart';
 import '../views/form_create_marker.dart';
 import '../views/form_update_marker.dart';
 import '../views/comments.dart';
 import '../views/sign_up.dart';
 import '../views/login.dart';
 import '../widgets/map.dart';
-import '../widgets/chart.dart';
 import '../views/filter.dart';
 
 class AppRoutes {
@@ -66,11 +63,8 @@ class AppRoutes {
       profile: (context) => ProfilePage(),
       recoveryPassword: (context) => RecoveryPassword(),
       updatePassword: (context) => UpdatePassword(),
-      ranking: (context) => Scoreboard(),
-      badges: (context) => Achievements(),
       filter: (context) => Filter(),
       comments: (context) => Comments(),
-      chart: (context) => InformationsChart(),
     };
   }
 }

@@ -5,9 +5,6 @@ import 'package:app_visibility/routes/routes.dart';
 import 'package:app_visibility/models/authenticate.dart';
 import 'package:app_visibility/shared/config.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:app_visibility/views/achievement_view.dart';
-import 'package:app_visibility/utils/notification_service.dart';
-
 class Login extends StatefulWidget {
   @override
   _LoginState createState() => _LoginState();

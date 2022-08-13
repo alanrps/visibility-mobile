@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:app_visibility/widgets/map_main.dart';
 // import 'package:app_visibility/widgets/users.dart';
-import 'package:app_visibility/views/gamification.dart';
 import 'package:app_visibility/views/profile.dart';
 // import 'package:google_maps_flutter/google_maps_flutter.dart';
 // import 'package:app_visibility/routes/routes.dart';
@@ -81,7 +80,7 @@ class _HomeState extends State<Home> {
   //   );
   // }
 
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -109,10 +108,6 @@ class _HomeState extends State<Home> {
         onTap: _onItemTapped,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-              icon: Icon(Icons.emoji_events),
-              label: "Gamificação",
-              backgroundColor: Colors.red),
-          BottomNavigationBarItem(
               icon: Icon(Icons.house),
               label: "Inicio",
               backgroundColor: Colors.green),
@@ -123,7 +118,6 @@ class _HomeState extends State<Home> {
         ],
       ),
       body: <Widget>[
-        Gamification(),
         MapMain(),
         ProfilePage(),
       ].elementAt(_selectedIndex),

@@ -4,8 +4,6 @@ import 'package:comment_box/comment/comment.dart';
 import 'package:app_visibility/models/get_comments.dart';
 import 'package:app_visibility/models/insert_comment.dart';
 import 'package:flutter/material.dart';
-import 'package:app_visibility/views/achievement_view.dart';
-import 'package:app_visibility/utils/notification_service.dart';
 import 'package:dio/dio.dart';
 
 class Comments extends StatefulWidget {
@@ -147,21 +145,6 @@ class _CommentsState extends State<Comments> {
 
                     await insertComment(comment);
 
-                    Map<String, dynamic> userData = await storage.readAll();
-                    String urlUpdateInformationsAmount = '${Config.baseUrl}/users/${userData['id']}/informationAmount';
-                    
-                    print(urlUpdateInformationsAmount);
-
-                    final informationAmount = await dio.patch(urlUpdateInformationsAmount, data: <String, dynamic>{ 
-                        "updatedProperties": ['comments'],
-                        "currentAction": "C"
-                        },
-                          options: Options(
-                            headers: {
-                              'Authorization': 'Bearer ${userData['token']}',
-                            },
-                      ));
-
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text('Comentário adicionado com sucesso! (+5 pontos)' ), 
                     duration: Duration(seconds: 2),
@@ -169,24 +152,6 @@ class _CommentsState extends State<Comments> {
 
                     commentController.clear();
                     FocusScope.of(context).unfocus();
-
-                    final achievements = informationAmount.data[1] as List<dynamic>;
-                    print(achievements);
-
-                    NotificationService n =  NotificationService();
-                    int counter = 0;                  
-                    await n.initState();
-
-                    if(informationAmount.data[0]['updatedLevel'] == true){
-                      await n.showNotification(counter, 'Avançou de nível!', 'Parabéns! você atingiu o nível ${informationAmount.data[0]['level']}', 'O pai é brabo mesmo', true);
-                      counter += 1;
-                    }
-                    if(achievements.length >= 1){
-                      for(Map<String, dynamic> achievement in achievements){
-                        await n.showNotification(counter, 'Adquiriu uma conquista!', achievement['description'], 'O pai é brabo mesmo', false);
-                        counter += 1;
-                      }
-                    }
                   } else {
                     print("Not validated");
                   }

@@ -4,17 +4,8 @@ import 'package:location/location.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:app_visibility/models/marker.dart';
-import 'package:app_visibility/utils/utils.dart';
 import 'package:app_visibility/routes/routes.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:app_visibility/formatters/max_length_in_line_formatter.dart';
-import 'package:app_visibility/formatters/max_lines_formatter.dart';
-import 'package:app_visibility/utils/utils.dart';
-import 'package:app_visibility/models/badges.dart';
-import 'package:app_visibility/views/achievement_view.dart';
-import 'package:app_visibility/utils/notification_service.dart';
-import 'dart:io';
-
 
 class FormCreateMark extends StatefulWidget {
   @override
@@ -260,7 +251,6 @@ class _FormCreateMark extends State<FormCreateMark> {
       dynamic createdMarker;
       try {
         String urlCreateMarker = '${Config.baseUrl}/markers';
-        String urlUpdateInformationsAmount = '${Config.baseUrl}/users/${userData['id']}/informationAmount';
 
         Response resultCreatedMarker = await dio.post(urlCreateMarker,
             data: markerData,
@@ -273,56 +263,6 @@ class _FormCreateMark extends State<FormCreateMark> {
         createdMarker = resultCreatedMarker.data;
         print("new marker");
         print(createdMarker);
-
-        String action = "";
-        if(marker.typeMarker == "PLACE"){
-          if(_caractersCount.length >= 200){
-            action = "EP200";
-            this.pontos = 25;
-            this.message = "Avaliação com mais de 200 caracteres adicionada com sucesso!";
-          }
-          else{
-            action = "EP";
-            this.pontos = 15;
-            this.message = "Avaliação adicionada com sucesso!";
-          }
-
-        }
-        else if(marker.typeMarker == "WHEELCHAIR_PARKING"){
-          action = "EWP";
-          this.pontos = 10;
-          this.message = "Vaga de cadeirante adicionada com sucesso!";
-        }
-
-        final informationAmount = await dio.patch(urlUpdateInformationsAmount, data: <String, dynamic>{ 
-          "updatedProperties": Utils.convertListToLowerCase(updatedProperties),
-          "currentAction": action,
-          },
-            options: Options(
-              headers: {
-                'Authorization': 'Bearer ${userData['token']}',
-              },
-        ));
-
-        print(informationAmount.data[1]);
-
-        final achievements = informationAmount.data[1] as List<dynamic>;
-        print(achievements);
-
-        NotificationService n =  NotificationService();
-        int counter = 0;                  
-        await n.initState();
-
-        if(informationAmount.data[0]['updatedLevel'] == true){
-          await n.showNotification(counter, 'Avançou de nível!', 'Parabéns! você atingiu o nível ${informationAmount.data[0]['level']}', 'O pai é brabo mesmo', true);
-          counter += 1;
-        }
-        if(achievements.length >= 1){
-          for(Map<String, dynamic> achievement in achievements){
-            await n.showNotification(counter, 'Adquiriu uma conquista!', achievement['description'], 'O pai é brabo mesmo', false);
-            counter += 1;
-          }
-        }
       } catch (e) {
         print(e);
       }
