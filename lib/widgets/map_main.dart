@@ -314,7 +314,7 @@ class _MapMainState extends State<MapMain> {
           ),
           if (_openDialog != false) ...[
             AlertDialog(
-              actionsAlignment: MainAxisAlignment.spaceBetween,
+              actionsAlignment: MainAxisAlignment.center,
               scrollable: true,
               backgroundColor: place.classify != ''
                   ? acessibilityTypesColors[place.classify!]
@@ -392,70 +392,70 @@ class _MapMainState extends State<MapMain> {
                 ],
               ),
               actions: [
-                IconButton(
-                    icon: Icon(Icons.chat),
-                    alignment: Alignment.centerLeft,
-                    onPressed: (){
-                      Navigator.pushNamed(
-                        context, appRoutes.comments,
-                        arguments: { "markerId": place.markerId });
+                // IconButton(
+                //     icon: Icon(Icons.chat),
+                //     alignment: Alignment.centerLeft,
+                //     onPressed: (){
+                //       Navigator.pushNamed(
+                //         context, appRoutes.comments,
+                //         arguments: { "markerId": place.markerId });
 
-                        setState(() {
-                          _openDialog = false;
-                        });
-                    }),
-                IconButton(
-                    icon: Icon(Icons.create_sharp),
-                    alignment: Alignment.center,
-                    onPressed: () async {
-                      print(place.markerId);
+                //         setState(() {
+                //           _openDialog = false;
+                //         });
+                //     }),
+                // IconButton(
+                //     icon: Icon(Icons.create_sharp),
+                //     alignment: Alignment.center,
+                //     onPressed: () async {
+                //       print(place.markerId);
 
-                      final dynamic result = await Navigator.pushNamed(context, appRoutes.getUpdateMarker,
-                          arguments: {
-                            "markerId": place.markerId,
-                            "classify": place.classify,
-                            "spaceType": place.spaceType,
-                            "category": place.category,
-                            "name": place.name,
-                            "description": place.description
-                          });
+                //       final dynamic result = await Navigator.pushNamed(context, appRoutes.getUpdateMarker,
+                //           arguments: {
+                //             "markerId": place.markerId,
+                //             "classify": place.classify,
+                //             "spaceType": place.spaceType,
+                //             "category": place.category,
+                //             "name": place.name,
+                //             "description": place.description
+                //           });
 
-                        print("RESULTADO");
-                        print(result);
+                //         print("RESULTADO");
+                //         print(result);
 
-                        if(result != null){
-                          Set<Marker> newMarkers = {};
-                        _markers.forEach((Marker element) async {
-                            print('DATA');
-                            print(place.markerId);
-                            print(element.markerId.value);
-                          if(int.parse(element.markerId.value) == place.markerId){
+                //         if(result != null){
+                //           Set<Marker> newMarkers = {};
+                //         _markers.forEach((Marker element) async {
+                //             print('DATA');
+                //             print(place.markerId);
+                //             print(element.markerId.value);
+                //           if(int.parse(element.markerId.value) == place.markerId){
 
-                              newMarkers.add(new Marker(
-                                icon: await _loadImage(result['category']),
-                                markerId: element.markerId,
-                                position: element.position,
-                                onTap: () => _getDialogData(int.parse(element.markerId.value)),
-                              ));
-                          }
-                          else{
-                            newMarkers.add(element);
-                          }
-                        });
+                //               newMarkers.add(new Marker(
+                //                 icon: await _loadImage(result['category']),
+                //                 markerId: element.markerId,
+                //                 position: element.position,
+                //                 onTap: () => _getDialogData(int.parse(element.markerId.value)),
+                //               ));
+                //           }
+                //           else{
+                //             newMarkers.add(element);
+                //           }
+                //         });
 
-                        print('new markers');
-                        print(newMarkers);
+                //         print('new markers');
+                //         print(newMarkers);
 
-                        setState(() {
-                          _openDialog = false;
-                          _markers = newMarkers;
-                        });
-                        }
+                //         setState(() {
+                //           _openDialog = false;
+                //           _markers = newMarkers;
+                //         });
+                //         }
 
-                        setState(() {
-                          _openDialog = false;
-                        });
-                    }),
+                //         setState(() {
+                //           _openDialog = false;
+                //         });
+                //     }),
                 IconButton(
                     icon: Icon(Icons.check_circle_rounded),
                     alignment: Alignment.center,
@@ -473,41 +473,41 @@ class _MapMainState extends State<MapMain> {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Align(
-                    alignment: Alignment.bottomRight,
-                    child: FloatingActionButton(
-                      heroTag: 'btn1',
-                      onPressed: () async {
-                        setState(() {
-                          this._inProgress = false;
-                        });
+                // Padding(
+                //   padding: const EdgeInsets.all(20.0),
+                //   child: Align(
+                //     alignment: Alignment.bottomRight,
+                //     child: FloatingActionButton(
+                //       heroTag: 'btn1',
+                //       onPressed: () async {
+                //         setState(() {
+                //           this._inProgress = false;
+                //         });
 
-                        print("argumentos");
-                        print(this._accessibilitiesFilter);
-                        print(this._categoriesFilter);
-                        final result = await Navigator.pushNamed(context, appRoutes.getFilter, arguments: {
-                          "acessibilities": this._accessibilitiesFilter,
-                          "categories": this._categoriesFilter, 
-                        });
+                //         print("argumentos");
+                //         print(this._accessibilitiesFilter);
+                //         print(this._categoriesFilter);
+                //         final result = await Navigator.pushNamed(context, appRoutes.getFilter, arguments: {
+                //           "acessibilities": this._accessibilitiesFilter,
+                //           "categories": this._categoriesFilter, 
+                //         });
 
-                        await _getMarkersFilter(result);
+                //         await _getMarkersFilter(result);
 
-                        setState(() {
-                          this._inProgress = true;
-                        });
-                      },
-                      materialTapTargetSize: MaterialTapTargetSize.padded,
-                      backgroundColor: Colors.white,
-                      child: const Icon(
-                        Icons.filter_list_outlined,
-                        size: 45.0,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
+                //         setState(() {
+                //           this._inProgress = true;
+                //         });
+                //       },
+                //       materialTapTargetSize: MaterialTapTargetSize.padded,
+                //       backgroundColor: Colors.white,
+                //       child: const Icon(
+                //         Icons.filter_list_outlined,
+                //         size: 45.0,
+                //         color: Colors.black,
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Align(

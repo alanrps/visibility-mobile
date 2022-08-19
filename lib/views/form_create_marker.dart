@@ -266,9 +266,9 @@ class _FormCreateMark extends State<FormCreateMark> {
       } catch (e) {
         print(e);
       }
-      // Marcação Adicionada com sucesso!
+      // !
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('${this.message} (+${this.pontos} pontos)'), 
+        content: Text('Marcação Adicionada com sucesso'), 
         duration: Duration(seconds: 2),
       ));
       
